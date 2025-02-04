@@ -1,0 +1,54 @@
+{% extends "main.html" %}
+
+
+{% block content %}
+    <!-- Order confirmation page -->
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+        
+        <div class="col-md-6">
+
+            <div class="card">
+
+                <div class="card-body text-center">
+
+                    <h1 class="display-4 text-success mb-4"> Order Confirmation </h1>
+                    <p class="lead"> Thank you for your purchase, Your order has sucessfully placed.</p>
+
+                    <div class="border-top border-bottom py-4 my-4"> 
+                        <h2 class="h4 mb-4"> Order Details </h2>
+                        <p class="mb-1"> Order Number: #shop_{{ order.id }}</p>
+                        <p class="mb-1"> Order Date: #shop_{{ order.created_at | date: "M, D, Y" }}</p>
+                        <p class="mb-1"> Total amount: £{{ order.total_price }}</p>
+                    </div>
+
+                    <div class="text-start">
+                        <h3 class="h5 mb-3"> Items Ordered </h3>
+                        {% for item in order.items.all %}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <p class="my-0">{{ item.product.name }}</p>
+                                <small class="text-muted"> Quantity: {{ item.quantity }}</small>
+                            </div>
+                            <div class="text-muted"> £{{ item.get_total }} 
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{% url 'order_history' %}" class="btn btn-outline-primary "></a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{% endblock content %}

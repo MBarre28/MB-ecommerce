@@ -1,0 +1,88 @@
+{% extends "main.html" %} 
+
+{% block content %}
+<!-- Checkout page -->
+
+<div class="container py-5">
+  <h1 class="mb-4 fs-4">Checkout</h1>
+
+  {% if messages %}
+  <div class="messages mb-4">
+    <!-- For loop to itrate the messages with the conditional statement -->
+    {% for message in messages %}
+    <div
+      class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-success {% endif %} rounded"
+    >
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="row">
+
+    <!-- Order Summary -->
+    <div class="col-md-4 order-md-2 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title mb-0">Order Summary</h3>
+        </div>
+        <div class="card-body">
+            
+          {% for item in cart_items %}
+          <div class="d-flex justify-content-between mb-3">
+            <h6 class="my-0">{{ item.product.name }}</h6>
+            <small class="text-muted"> Quantity: {{ item.quantity }}</small>
+          </div>
+          <div class="text-muted"> £{{ item.get_total }} </div>
+          {% endfor %}
+
+          <hr>
+          <div class="d-flex justify-content-between">
+            <span> Total: </span>
+            <strong> £{{ total_price }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8 order-md-1">
+      <form method="post">
+        {% csrf_token %}
+
+        <!-- Shipping Address  -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3 class="card-title mb-0">Shipping Address</h3>
+          </div>
+          <div class="card-body">{{ shipping_form.as_p }}
+          </div>
+        </div>
+
+        <!-- Payment method  -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3 class="card-title mb-0">Payment Method</h3>
+          </div>
+          <div class="card-body">{{ payment_form.as_p }}</div>
+        </div>
+
+        <!-- Coupon Code -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3 class="card-title mb-0">Do you have a coupon to purchase?</h3>
+          </div>
+          <div class="card-body">{{ coupon_form.as_p }}</div>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block w-100" type="submit"> Submit </button> 
+      </form>
+    </div>
+
+  
+  </div>
+
+
+
+</div>
+
+{% endblock content %}

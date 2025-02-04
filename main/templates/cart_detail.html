@@ -1,0 +1,116 @@
+{% extends "main.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="fs-2 bold-mb-4"> Shopping Cart </h1>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        <!-- For loop to itrate the messages with the conditional statement -->
+        {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-success {% endif %} rounded ">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if cart_items %}
+    <div class="card shadow">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-uppercase small fw-medium text-muted"> Product </th>
+                        <th class="text-uppercase small fw-medium text-muted"> Price </th>
+                        <th class="text-uppercase small fw-medium text-muted"> Quantity </th>
+                        <th class="text-uppercase small fw-medium text-muted"> Total </th>
+                        <th class="text-uppercase small fw-medium text-muted"> Action </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Error spotted, for item in cart_items instead of cart. -->
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>
+                            <div class="rounded align-items-center">
+                                {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}"
+                                    alt="{{ item.product.name }}"
+                                    class="rounded"
+                                    style="width: 8rem; height: 6rem; object-fit: cover;">
+                                {% endif %}
+
+                                <div class="ms-3">
+                                    <a
+                                        href="{% url 'product_detail' item.product.slug %}"
+                                        class="text-decoration-name fw-medium text-dark">
+                                        {{ item.product.name }}
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td> £{{ item.product.price }} </td>
+                        <td>
+                            <form
+                                action="{% url 'cart_update' item.product.id %}"
+                                method="POST"
+                                class="d-flex, align-items-center gap-2">
+                                {% csrf_token %}
+                                <input type="number"
+                                    name="quantity"
+                                    value="{{ item.quantity }}"
+                                    min="1"
+                                    max="{{ item.product.stock }}"
+                                    class="form-control"
+                                    style="width: 5rem;">
+                                <button type="submit"
+                                    class="btn btn-link text-decoration-none fw-medium p-0 text-primary">
+                                    Update 
+                                </button>
+                            </form>
+                        </td>
+
+                        <!-- total in the table -->
+                        <td> £{{ item.get_total }} </td>
+                        <td>
+                            <a href="{% url 'cart_remove' item.product.id %}"
+                                class="text-danger text-decoration-none">
+                                Remove
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+            <div class="card-footer bg-light">
+                <div class="d-flex justify-content-between align-item-center">
+                    <div class="fs-5 fw-medium">
+
+                        <!-- Used cart total instead of total price, full total of the product in shopping cart. -->
+                        Total: £{{ cart_total }}
+                    </div>
+                    <a href="{% url 'checkout' %}" class="btn btn-primary">
+                        Checkout
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        {% else %}
+        <div class="text-center py-5">
+            <p class="text-muted mb-4"> Cart is empty </p>
+            <a href="{% url 'product_list' %}" class="btn btn-primary">
+                Processed to shopping
+            </a>
+        </div>
+
+        {% endif %}
+    </div>
+</div>
+
+{% endblock content %}

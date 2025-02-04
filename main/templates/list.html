@@ -1,0 +1,69 @@
+{% extends "main.html" %} {% block content %}
+<h3>Latest Products</h3>
+
+{% comment %} category filter link {% endcomment %}
+<div class="mb-5">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="card col-md-100">
+        <div class="card-header">
+          <h5 class="mb-0">categories</h5>
+        </div>
+        <div class="card-body bg-dark">
+          <div class="list-group">
+            <a
+              href="{% url 'product_list' %}"
+              class="list-group-item list-group-item-action {% if not current_category %} active {% endif %}"
+            >
+              All products
+            </a>
+            {% for category in categories %}
+            <a
+              href="{% url 'category_products' category.slug %}"
+              class="list-group-item list-group-item-action {% if not current_category == category.slug %} active {% endif %}"
+            >
+              {{ category.name }}
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Product Grid -->
+<div class="row">
+  {% for product in products %}
+  <div class="col-sm-4 mb-6 mb-sm-0">
+    <div class="card list-card mb-4">
+      <a href="/product/{{ product.slug }}"> </a>
+      <img
+        src="{{ product.image.url }}"
+        alt="{{ product.name }}"
+        class="card-img-top"
+      />
+      <div class="m-4">
+        <h5 class="card-title">{{ product.name }}</h5>
+        <p class="card-text">£{{ product.price }}</p>
+        <p class="card-text">Stock: {{product.stock}}</p>
+        <p class="mb-2 m-2">
+          <span class="font-semibold"> available: </span>
+
+          {% if product.available %}
+          <span class="text-green-600"> In stock </span>
+          {% else %}
+          <span class="text-red-600 m-2"> Unavailable </span>
+          {% endif %}
+        </p>
+        <a
+          class="btn btn-primary"
+          href="{% url 'product_detail' product.slug %}">
+          View Details
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock content %}

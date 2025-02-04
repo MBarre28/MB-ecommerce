@@ -1,0 +1,52 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class="container py-5">
+    <h1 class="mb-4"> Order History </h1>
+    {% if orders %}
+    {% for order in orders %}
+    <div class="card mb-4">
+        <div class="card-header">
+
+            {% for item in order.items.all %}
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="my-0">{{ item.product.name }}</p>
+                    <small class="text-muted"> Quantity: {{ item.quantity
+                        }}</small>
+                </div>
+                <div class="text-muted"> £{{ item.product.price }}
+                </div>
+                {% endfor %}
+
+                <hr>
+                <div class="d-flex justify-content-between align-items center">
+                    <div>
+                        <p class="mb-0"> Payment Status:
+                            <spam
+                                class="badge {% if order.payment.payment_status == 'completed'%}bg-success{% elif order.payment.payment_status == 'pending'%}bg-warning{% else %}bg-danger {% endif %}">
+                            </spam>
+                        </p>
+                        <a href="{% url 'order_detail' order.id %}"
+                            class="btn btn-outline-primary btn-small"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+
+    {% else %}
+    <div class="text-center py-4">
+        <p> You don't have any orders placed </p>
+        <a href="{% url 'product_list' %}"
+            class="btn btn-outline-dark w-100">
+            More products
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock content %}
