@@ -60,6 +60,7 @@ def login_view(request):
     else:
         form = AuthenticationForm()
         return render(request, 'login.html', {'form': form})
+    return render( request, 'list.html')
 
 # logout from the e-commerce site 
 
