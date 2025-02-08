@@ -228,22 +228,21 @@ def cart_detail(request):
 
 @login_required
 def checkout(request):
-
     cart = get_or_create_cart(request)
     cart_items = CartItem.objects.filter(cart=cart).select_related("product")
 
     # Get the cart items from the cart and creating the order
-    try:
-        cart = Cart.objects.prefetch_related('items').get(
-        session_id=request.session.session_key)
-        cart_items = cart.items.all()
-        if not cart_items.exists():
+
+    if not cart_items.exists():
             messages.error(request, "Cart has no items, please select a cart")
             return redirect("cart_detail")
-        
-    except Cart.DoesNotExist:
-        messages.error(request, "Cart has no items, please select a cart")
-        return redirect("cart_detail")
+    
+    cart_total = (
+    CartItem.objects.filter(cart=cart).aggregate(
+        total=Sum(F("product__price") * F("quantity"))
+    )["total"] or 0
+)
+
 
     # creating the shipping and payment forms
     shipping_form = ShippingAddressForm(request.POST or None)
@@ -305,7 +304,6 @@ def checkout(request):
                 )
 
                 cart_items.delete()
-                cart.delete()
 
                 messages.sucess(request, "your order has been placed successfully")
                 return redirect("order_confirmation", order_id=order.id)
@@ -317,9 +315,7 @@ def checkout(request):
         'cart_items': cart_items,
         'shipping_form': shipping_form,
         'coupon_form': coupon_form,
-        'total_price': CartItem.objects.filter(cart=cart).aggregate(
-        total=Sum(F("product__price") * F("quantity"))
-        )["total"] or 0
+        'total_price': cart_total,
     }
 
     return render(request, 'checkout.html', context)
