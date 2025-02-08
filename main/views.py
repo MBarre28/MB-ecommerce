@@ -57,7 +57,7 @@ def login_view(request):
                 messages.error(request, 'User not found, invalid username or password.')
         else:
             messages.error(request, 'User not found, invalid username or password.')
-            return render(request, 'list.html', {'form': form})
+            return render(request, 'checkout.html', {'form': form})
     else:
         form = AuthenticationForm()
         return render(request, 'login.html', {'form': form})
@@ -228,7 +228,7 @@ def cart_detail(request):
     )
 
 
-# @login_required
+@login_required
 def checkout(request):
     cart = get_or_create_cart(request)
     cart_items = CartItem.objects.filter(cart=cart).select_related("product")
