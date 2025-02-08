@@ -228,7 +228,7 @@ def cart_detail(request):
     )
 
 
-@login_required
+# @login_required
 def checkout(request):
     cart = get_or_create_cart(request)
     cart_items = CartItem.objects.filter(cart=cart).select_related("product")
