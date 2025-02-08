@@ -229,6 +229,9 @@ def cart_detail(request):
 @login_required
 def checkout(request):
 
+    cart = get_or_create_cart(request)
+    cart_items = CartItem.objects.filter(cart=cart).select_related("product")
+
     # Get the cart items from the cart and creating the order
     try:
         cart = Cart.objects.prefetch_related('items').get(
