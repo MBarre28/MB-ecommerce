@@ -272,7 +272,7 @@ def checkout(request):
 
                 coupon = None
                 if coupon_form.is_valid():
-                    coupon_form = coupon_form.clear_data["coupon"]
+                    coupon_form = coupon_form.cleaned_data["coupon"]
                 if coupon.is_valid():
                     total_price *= 1 - (coupon.discount_perentage / 100)
                     coupon.current_usage += 1
