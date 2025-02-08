@@ -309,9 +309,6 @@ def checkout(request):
 
                 messages.sucess(request, "your order has been placed successfully")
                 return redirect("order_confirmation", order_id=order.id)
-    
-
-    
 
     context = {
         'cart_items': cart_items,
