@@ -331,5 +331,5 @@ def order_confirmation(request, order_id):
 # This view is use to display the order history page.
 @login_required
 def order_history(request, order_id):
-    orders = Order.objects.filter(user=request.user).order_by("-created_at")
+    orders = Order.objects.filter(order_id, user=request.user).order_by("-created_at")
     return render(request, "order_history.html", {"orders": orders})
