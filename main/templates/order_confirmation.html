@@ -18,8 +18,8 @@
 
                     <div class="border-top border-bottom py-4 my-4"> 
                         <h2 class="h4 mb-4"> Order Details </h2>
-                        <p class="mb-1"> Order Number: #shop_{{ order.id }}</p>
-                        <p class="mb-1"> Order Date: #shop_{{ order.created_at }}</p>
+                        <p class="mb-1"> Order Number: #{{ order.id }}</p>
+                        <p class="mb-1"> Order Date: {{ order.created_at }}</p>
                         <p class="mb-1"> Total amount: £{{ order.total_price }}</p>
                     </div>
 
@@ -31,7 +31,7 @@
                                 <p class="my-0">{{ item.product.name }}</p>
                                 <small class="text-muted"> Quantity: {{ item.quantity }}</small>
                             </div>
-                            <div class="text-muted"> £{{ item.get_total }} 
+                            <div class="text-muted"> £{{ item.product.price }} 
                             </div>
                         </div>
                         {% endfor %}
