@@ -35,11 +35,10 @@ class ShippingAddressForm(forms.ModelForm):
 
 
 class PaymentForm(forms.Form):
-    model = Payment
-    fields = ['payment_method'],
-    widget = {
-        'payment_method': forms.Select(attrs={'class': 'form-control'}),
-    } 
+    payment_method =  forms.ChoiceField(
+    choices=Payment.PAYMENT_METHODS,
+    widget = forms.Select ( attrs= {'class': 'form-control'}),
+    )
 
 class CouponForm(forms.Form):
     coupon_code = forms.CharField(
