@@ -22,7 +22,7 @@ urlpatterns = [
     # Order endpoints URL pattern
     path('checkout/', checkout, name='checkout'),
     path('order/confirmation/<int:order_id>/', order_confirmation, name='order_confirmation'),
-    path('order/history', order_history, name='order_history'),
+    path('order/history/', order_history, name='order_history'),
 
     # Authentication endpoints URL pattern
     path('register/', register, name='register'),
