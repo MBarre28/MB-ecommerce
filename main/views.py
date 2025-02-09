@@ -39,8 +39,6 @@ def register(request):
 # login form for validating username and password 
 
 
-
-
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data = request.POST)
@@ -70,11 +68,7 @@ def logout_view(request):
     messages.success(request, 'Logged out successfully.')
     return redirect('product_list')
         
-            
-
 # Product list view for the list of products
-    
-
 class ProductListView(ListView):
     model = Product
     template_name = "list.html"
