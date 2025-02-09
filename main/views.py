@@ -274,7 +274,7 @@ def checkout(request):
                 if coupon_form.is_valid():
                     coupon = coupon_form.cleaned_data["coupon_code"]
                 if coupon.is_valid():
-                    total_price *= (1 - coupon.discount_perentage / 100)
+                    total_price *= (1 - coupon.discount_percentage / 100)
                     coupon.current_usage += 1
                     coupon.save()
 
@@ -312,6 +312,7 @@ def checkout(request):
 
     context = {
         'cart_items': cart_items,
+        'payment_form': payment_form,
         'shipping_form': shipping_form,
         'coupon_form': coupon_form,
         'total_price': cart_total,
