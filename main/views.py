@@ -271,9 +271,9 @@ def checkout(request):
                 )
 
                 coupon = None
-                if coupon_form.is_valid():
+                if coupon_form.is_valid() and coupon_form.cleaned_data.get("coupon_code"):
                     coupon = coupon_form.cleaned_data["coupon_code"]
-                if coupon.is_valid():
+                if coupon and coupon.is_valid():
                     total_price *= (1 - coupon.discount_percentage / 100)
                     coupon.current_usage += 1
                     coupon.save()
@@ -307,7 +307,7 @@ def checkout(request):
 
                 cart_items.delete()
 
-                messages.sucess(request, "your order has been placed successfully")
+                messages.success(request, "your order has been placed successfully")
                 return redirect("order_confirmation", order_id=order.id)
 
     context = {

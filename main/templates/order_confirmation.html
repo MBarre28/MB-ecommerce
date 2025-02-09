@@ -19,7 +19,7 @@
                     <div class="border-top border-bottom py-4 my-4"> 
                         <h2 class="h4 mb-4"> Order Details </h2>
                         <p class="mb-1"> Order Number: #shop_{{ order.id }}</p>
-                        <p class="mb-1"> Order Date: #shop_{{ order.created_at | date: "M, D, Y" }}</p>
+                        <p class="mb-1"> Order Date: #shop_{{ order.created_at }}</p>
                         <p class="mb-1"> Total amount: £{{ order.total_price }}</p>
                     </div>
 
