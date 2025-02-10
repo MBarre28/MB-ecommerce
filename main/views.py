@@ -327,3 +327,9 @@ def order_confirmation(request, order_id):
 def order_history(request, order_id):
     orders = Order.objects.filter(order_id, user=request.user).order_by("-created_at")
     return render(request, "order_history.html", {"orders": orders})
+
+
+# paypal views 
+def get_paypal_access_token(request):
+    # auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
+    
