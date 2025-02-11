@@ -18,6 +18,14 @@ from django.db import transaction
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import login, logout, authenticate 
 from .forms import ShippingAddressForm, CouponForm, PaymentForm
+from django.conf import settings 
+import requests
+import json
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+
+
+
 
 
 @login_required
@@ -330,6 +338,15 @@ def order_history(request, order_id):
 
 
 # paypal views 
-def get_paypal_access_token(request):
-    pass
-    # auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
+def get_paypal_access_token():
+    auth_url = ""
+    headers = {
+        "Accept": "application/json",
+        "Accept-Language": "en_GB"
+    }
+
+    auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_CLIENT_SECRET)
+    data = ("grant_type", "client_credentials")
+
+    response = requests.post(auth_url, data=data, headers=headers)
+    
