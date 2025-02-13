@@ -346,8 +346,46 @@ def get_paypal_access_token():
     }
 
     auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_CLIENT_SECRET)
-    data = ("grant_type": "client_credentials")
+    data = {"grant_type": "client_credentials"}
 
     response = requests.post(auth_url, headers=headers, data=data, headers=headers)
     return response.json().get("access_token")
-    
+
+
+@login_required
+def create_paypal_order(request):
+    if request.method != "POST":
+        return JsonResponse(("error, method not found"), status = 405)
+
+
+    cart = get_or_create_cart(request)
+    cart_total = ( CartItem.objects.filter(cart=cart).aggregate(
+        total=Sum(F("product__price") * F("quantity"))
+        )["total"] or 0
+    )
+
+    access_token = get_paypal_access_token()
+    headers = {
+    "Accept" : "application/json",
+    "authorization" : f"bearer {access_token}",
+
+}
+
+payload = {
+    "intent": "CAPTURE",
+    "purchase_units": [
+        {
+            "amount": {
+                "currency_code": "USD",
+                "value": "cart_total"
+                
+            }
+        }
+    ]
+}
+
+response = requests.post( "https://api-m.sandbox.paypal.com/v2/checkout/orders", 
+    headers = headers, 
+    json = json.dumps(payload),
+)
+        
