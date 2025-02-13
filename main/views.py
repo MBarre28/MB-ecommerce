@@ -385,7 +385,7 @@ payload = {
 }
 
 response = requests.post( "https://api-m.sandbox.paypal.com/v2/checkout/orders", 
-    headers = headers, 
+    headers = "headers", 
     json = json.dumps(payload),
 )
         
