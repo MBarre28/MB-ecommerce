@@ -377,7 +377,7 @@ payload = {
         {
             "amount": {
                 "currency_code": "USD",
-                "value": "cart_total"
+                "value": "cart_total" # error code on passing cart_total value
                 
             }
         }
@@ -385,7 +385,7 @@ payload = {
 }
 
 response = requests.post( "https://api-m.sandbox.paypal.com/v2/checkout/orders", 
-    headers = "headers", 
+    headers = "headers", # headers has not accessed yet
     json = json.dumps(payload),
 )
         
