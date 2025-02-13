@@ -348,5 +348,6 @@ def get_paypal_access_token():
     auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_CLIENT_SECRET)
     data = ("grant_type": "client_credentials")
 
-    response = requests.post(auth_url, data=data, headers=headers)
+    response = requests.post(auth_url, headers=headers, data=data, headers=headers)
+    return response.json().get("access_token")
     
