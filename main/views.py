@@ -381,19 +381,19 @@ def create_paypal_order(request):
             {
                 "amount": {
                     "currency_code": "USD",
-                    "value": "cart_total",  # error code on passing cart_total variable
+                    "value": cart_total,  # error code on passing cart_total variable
                 }
             }
         ],
     }
 
-response = requests.post(
-        "https://api-m.sandbox.paypal.com/v2/checkout/orders",
-        headers = "headers"  # headers has not accessed yet
-        data = json.dumps(payload)
-)
+    response = requests.post(
+            "https://api-m.sandbox.paypal.com/v2/checkout/orders",
+            headers = "headers"  # headers has not accessed yet
+            data = json.dumps(payload)
+    )
 
-return JsonResponse(response.json())
+    return JsonResponse(response.json())
 
 # @csrf_exempt
 # @login_required
