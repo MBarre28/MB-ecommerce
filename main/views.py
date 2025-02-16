@@ -358,7 +358,7 @@ def get_paypal_access_token():
 @login_required
 def create_paypal_order(request):
     if request.method != "POST":
-        return JsonResponse(('error': 'Method not supported'), status = 405)
+        return JsonResponse({'error': 'Method not supported'}, status = 405)
 
     cart = get_or_create_cart(request)
     cart_total = (
@@ -371,7 +371,7 @@ def create_paypal_order(request):
     access_token = get_paypal_access_token()
     headers = {
         "Accept": "application/json",
-        "authorization": f"bearer {access_token}",
+        "authorization": f"bearer {access_token}"
     }
 
 
