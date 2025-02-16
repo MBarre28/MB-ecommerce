@@ -386,7 +386,9 @@ payload = {
 }
 
 response = requests.post(
-    "https://api-m.sandbox.paypal.com/v2/checkout/orders",
-    headers="headers",  # headers has not accessed yet
-    json=json.dumps(payload),
+        "https://api-m.sandbox.paypal.com/v2/checkout/orders",
+        headers="headers",  # headers has not accessed yet
+        json=json.dumps(payload),
 )
+
+return JsonResponse(response.json())
