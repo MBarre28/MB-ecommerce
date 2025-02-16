@@ -30,7 +30,6 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
 
     # PayPal endpoints URL pattern
-
     path('paypal/create-order/', create_paypal_order, name='create_paypal_order'),
     path('paypal/capture-payment/', capture_paypal_payment, name='capture_paypal_payment'),
 
