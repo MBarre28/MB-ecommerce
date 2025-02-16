@@ -377,7 +377,7 @@ payload = {
         {
             "amount": {
                 "currency_code": "USD",
-                "value": "cart_total" # error code on passing cart_total value
+                "value": "cart_total" # error code on passing cart_total variable
                 
             }
         }
