@@ -344,12 +344,14 @@ def order_history(request, order_id):
 # paypal views
 def get_paypal_access_token():
     auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
-    headers = {"Accept": "application/json", "Accept-Language": "en_GB"}
+    headers = {"Accept": "application/json", 
+               "Accept-Language": "en_GB"
+               }
 
     auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_CLIENT_SECRET)
     data = {"grant_type": "client_credentials"}
 
-    response = requests.post(auth_url, headers=headers, data=data, headers=headers)
+    response = requests.post(auth_url, headers=headers, data=data)
     return response.json().get("access_token")
 
 
@@ -387,8 +389,13 @@ payload = {
 
 response = requests.post(
         "https://api-m.sandbox.paypal.com/v2/checkout/orders",
-        headers = headers  # headers has not accessed yet
-        json=json.dumps(payload),
+        headers = "headers"  # headers has not accessed yet
+        data = json.dumps(payload)
 )
 
 return JsonResponse(response.json())
+
+@csrf_exempt
+@login_required
+
+def capture_paypal_payment(request):
