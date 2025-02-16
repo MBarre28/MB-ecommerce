@@ -135,3 +135,8 @@ LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "product_list"
 LOGOUT_REDIRECT_URL = "product_list"
 
+# paypal payment settings
+
+PAYPAL_CLIENT_ID = ""
+PAYPAL_CLIENT_SECRET = ""
+PAYPAL_MODE = "sandbox"
