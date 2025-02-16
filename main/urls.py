@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (ProductListView, ProductDetailView,
                 CategoryListView, cart_add, cart_detail,
                 checkout, cart_remove, cart_update, order_confirmation, 
-                order_history, login_view, logout_view, register)
+                order_history, login_view, logout_view, register, capture_paypal_payment, create_paypal_order )
 
 
 urlpatterns = [
@@ -28,5 +28,10 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
+
+    # PayPal endpoints URL pattern
+
+    path('paypal/create-order/', create_paypal_order, name='create_paypal_order'),
+    path('paypal/capture-payment/', capture_paypal_payment, name='capture_paypal_payment'),
 
     ]
