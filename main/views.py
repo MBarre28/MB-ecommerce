@@ -427,19 +427,37 @@ def capture_paypal_payment(request):
             )
 
             for cart_item in cart_items:
-                product = cart_item.product
-                product.stock -= cart_item.quantity
-                product.save()
-
-                order_item = OrderItem.objects.create(
+                OrderItem.objects.create(
                     order = order,
                     product = cart_item.product,
                     quantity = cart_item.quantity,
                 )
 
-                order_item.save()
+
+                product = cart_item.product
+                product.stock -= cart_item.quantity
+                product.save()
+
+                payment = Payment.objects.create(
+                    user = request.user,
+                    order = order,
+                    payment_method = "PayPal",
+                    amount = total_price,
+                    payment_status = "Completed"
+                    payment_order_id = order_id,
+                    paypal_payment_id = response_data['id']
+
+                )
+
+
                 cart_item.delete()
                 messages.success(request, "Order item save successfully")
-                return JsonResponse({'message': 'Order item save sucessfully'})
+                return JsonResponse({
+                    "message": "Order item captured sucessfully",
+                    "order_id": order.id
+                })
             
-    return JsonResponse(response_data, status_code = 200)
+    return JsonResponse({
+        "status": "error",
+        "message": "order item capture failed"
+    }, status = 400)
