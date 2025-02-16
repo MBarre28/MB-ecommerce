@@ -375,17 +375,17 @@ def create_paypal_order(request):
     }
 
 
-payload = {
-    "intent": "CAPTURE",
-    "purchase_units": [
-        {
-            "amount": {
-                "currency_code": "USD",
-                "value": "cart_total",  # error code on passing cart_total variable
+    payload = {
+        "intent": "CAPTURE",
+        "purchase_units": [
+            {
+                "amount": {
+                    "currency_code": "USD",
+                    "value": "cart_total",  # error code on passing cart_total variable
+                }
             }
-        }
-    ],
-}
+        ],
+    }
 
 response = requests.post(
         "https://api-m.sandbox.paypal.com/v2/checkout/orders",
