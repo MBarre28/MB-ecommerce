@@ -344,21 +344,21 @@ def order_history(request, order_id):
 # paypal views
 def get_paypal_access_token():
     auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
-    headers = {"Accept": "application/json", 
+    headers = { "Accept": "application/json", 
                "Accept-Language": "en_GB"
-               }
+    }
 
     auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_CLIENT_SECRET)
     data = {"grant_type": "client_credentials"}
 
-    response = requests.post(auth_url, headers=headers, data=data)
+    response = requests.post(auth_url, headers=headers, auth=auth, data=data)
     return response.json().get("access_token")
 
 
 @login_required
 def create_paypal_order(request):
     if request.method != "POST":
-        return JsonResponse(("error, method not found"), status=405)
+        return JsonResponse(('error': 'Method not supported'), status = 405)
 
     cart = get_or_create_cart(request)
     cart_total = (
@@ -395,7 +395,7 @@ response = requests.post(
 
 return JsonResponse(response.json())
 
-@csrf_exempt
-@login_required
+# @csrf_exempt
+# @login_required
 
-def capture_paypal_payment(request):
+# def capture_paypal_payment(request):
