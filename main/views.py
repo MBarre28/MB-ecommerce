@@ -344,9 +344,7 @@ def order_history(request, order_id):
 # paypal views
 def get_paypal_access_token():
     auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
-    headers = { "Accept": "application/json", 
-               "Accept-Language": "en_GB"
-    }
+    headers = {"Accept": "application/json", "Accept-Language": "en_GB"}
 
     auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_CLIENT_SECRET)
     data = {"grant_type": "client_credentials"}
@@ -358,7 +356,7 @@ def get_paypal_access_token():
 @login_required
 def create_paypal_order(request):
     if request.method != "POST":
-        return JsonResponse({'error': 'Method not supported'}, status = 405)
+        return JsonResponse({"error": "Method not supported"}, status=405)
 
     cart = get_or_create_cart(request)
     cart_total = (
@@ -369,11 +367,7 @@ def create_paypal_order(request):
     )
 
     access_token = get_paypal_access_token()
-    headers = {
-        "Accept": "application/json",
-        "authorization": f"bearer {access_token}"
-    }
-
+    headers = {"Accept": "application/json", "authorization": f"bearer {access_token}"}
 
     payload = {
         "intent": "CAPTURE",
@@ -388,16 +382,64 @@ def create_paypal_order(request):
     }
 
     response = requests.post(
-            "https://api-m.sandbox.paypal.com/v2/checkout/orders",
-            headers = headers,  
-            data = json.dumps(payload)
+        "https://api-m.sandbox.paypal.com/v2/checkout/orders",
+        headers=headers,
+        data=json.dumps(payload),
     )
 
     return JsonResponse(response.json())
 
+
 @csrf_exempt
 @login_required
-
 def capture_paypal_payment(request):
     if request.method != "POST":
-        return JsonResponse({"error": "Invalid method"}, status = 405)
+        return JsonResponse({"error": "Invalid method"}, status=405)
+
+    data = json.loads(request.body)
+    order_id = data.get("order_id")
+
+    access_token = get_paypal_access_token()
+    headers = {"Accept": "application/json", "authorization": f"bearer {access_token}"}
+
+    response = requests.post(
+        f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture",
+        headers=headers,
+    )
+
+    response_data = response.json()
+
+    if response.status_code == 201:
+        with transaction.atomic():
+
+            cart = get_or_create_cart(request)
+            cart_items = CartItem.objects.filter(cart=cart).select_related("product")
+            total_price = (
+                CartItem.objects.filter(cart=cart).aggregate(
+                    total=Sum(F("product__price") * F("quantity"))
+                )["total"]
+                or 0
+            )
+            order = Order.objects.get(
+                user = request.user,
+                order_id = order_id,
+                total_price = total_price
+            )
+
+            for cart_item in cart_items:
+                product = cart_item.product
+                product.stock -= cart_item.quantity
+                product.save()
+
+                order_item = OrderItem.objects.create(
+                    order = order,
+                    product = cart_item.product,
+                    quantity = cart_item.quantity,
+                )
+
+                order_item.save()
+                cart_item.delete()
+                messages.success(request, "Order item save successfully")
+                return JsonResponse({'message': 'Order item save sucessfully'})
+            
+    return JsonResponse(response_data, status_code = 200)
