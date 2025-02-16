@@ -18,9 +18,9 @@ urlpatterns = [
     path('cart/remove/<int:product_id>/', cart_remove, name='cart_remove'),
     path('cart/update/<int:product_id>/', cart_update, name='cart_update'),
     path('cart/', cart_detail, name='cart_detail'),
+    path('checkout/', checkout, name='checkout'),
 
     # Order endpoints URL pattern
-    path('checkout/', checkout, name='checkout'),
     path('order/confirmation/<int:order_id>/', order_confirmation, name='order_confirmation'),
     path('order/history/', order_history, name='order_history'),
 
