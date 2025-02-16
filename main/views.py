@@ -443,7 +443,7 @@ def capture_paypal_payment(request):
                     order = order,
                     payment_method = "PayPal",
                     amount = total_price,
-                    payment_status = "Completed"
+                    payment_status = "Completed",
                     payment_order_id = order_id,
                     paypal_payment_id = response_data['id']
 
