@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (ProductListView, ProductDetailView,
                 CategoryListView, cart_add, cart_detail,
                 checkout, cart_remove, cart_update, order_confirmation, 
-                order_history, login_view, logout_view, register, capture_paypal_payment, create_paypal_order )
+                order_history, login_view, logout_view, register, capture_paypal_payment, create_paypal_order)
 
 
 urlpatterns = [
