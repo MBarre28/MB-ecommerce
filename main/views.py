@@ -16,66 +16,67 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, F
 from django.db import transaction
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.contrib.auth import login, logout, authenticate 
+from django.contrib.auth import login, logout, authenticate
 from .forms import ShippingAddressForm, CouponForm, PaymentForm
-from django.conf import settings 
+from django.conf import settings
 import requests
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
 
-
-
-
 @login_required
 # registration form for the user account
 def register(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, 'User created sucessfully.')
-            return redirect(request, 'product_list')
-        else: 
-            messages.error(request, 'Invalid username or password, try again.')
+            messages.success(request, "User created sucessfully.")
+            return redirect(request, "product_list")
+        else:
+            messages.error(request, "Invalid username or password, try again.")
     else:
         form = UserCreationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, "register.html", {"form": form})
 
-# login form for validating username and password 
+
+# login form for validating username and password
 
 
 def login_view(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data = request.POST)
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.success(request, 'Logged in successfully.')
-                next_url = request.GET.get('next', 'product_list')
+                messages.success(request, "Logged in successfully.")
+                next_url = request.GET.get("next", "product_list")
                 return redirect(next_url)
             else:
-                messages.error(request, 'User not found, invalid username or password.')
+                messages.error(request, "User not found, invalid username or password.")
         else:
-            messages.error(request, 'User not found, invalid username or password.')
-            return render(request, 'checkout.html', {'form': form})
+            messages.error(request, "User not found, invalid username or password.")
+            return render(request, "checkout.html", {"form": form})
     else:
         form = AuthenticationForm()
-        return render(request, 'login.html', {'form': form})
-    return render( request, 'list.html')
+        return render(request, "login.html", {"form": form})
+    return render(request, "list.html")
 
-# logout from the e-commerce site 
+
+# logout from the e-commerce site
+
 
 def logout_view(request):
     logout(request)
-    messages.success(request, 'Logged out successfully.')
-    return redirect('product_list')
-        
+    messages.success(request, "Logged out successfully.")
+    return redirect("product_list")
+
+
 # Product list view for the list of products
 class ProductListView(ListView):
     model = Product
@@ -101,6 +102,7 @@ class ProductListView(ListView):
 
 # Adding product to the cart
 
+
 class CategoryListView(ListView):
     model = Category
     template_name = "categories.html"
@@ -123,7 +125,6 @@ def get_or_create_cart(request):
     cart = Cart.objects.create(session_id=request.session.session_key)
     request.session["cart_id"] = cart.session_id
     return cart
-
 
 
 class ProductDetailView(DetailView):
@@ -238,15 +239,15 @@ def checkout(request):
     # Get the cart items from the cart and creating the order
 
     if not cart_items.exists():
-            messages.error(request, "Cart has no items, please select a cart")
-            return redirect("cart_detail")
-    
-    cart_total = (
-    CartItem.objects.filter(cart=cart).aggregate(
-        total=Sum(F("product__price") * F("quantity"))
-    )["total"] or 0
-)
+        messages.error(request, "Cart has no items, please select a cart")
+        return redirect("cart_detail")
 
+    cart_total = (
+        CartItem.objects.filter(cart=cart).aggregate(
+            total=Sum(F("product__price") * F("quantity"))
+        )["total"]
+        or 0
+    )
 
     # creating the shipping and payment forms
     shipping_form = ShippingAddressForm(request.POST or None)
@@ -269,14 +270,17 @@ def checkout(request):
                 total_price = (
                     CartItem.objects.filter(cart=cart).aggregate(
                         total=Sum(F("product__price") * F("quantity"))
-                    )["total"] or 0
+                    )["total"]
+                    or 0
                 )
 
                 coupon = None
-                if coupon_form.is_valid() and coupon_form.cleaned_data.get("coupon_code"):
+                if coupon_form.is_valid() and coupon_form.cleaned_data.get(
+                    "coupon_code"
+                ):
                     coupon = coupon_form.cleaned_data["coupon_code"]
                 if coupon and coupon.is_valid():
-                    total_price *= (1 - coupon.discount_percentage / 100)
+                    total_price *= 1 - coupon.discount_percentage / 100
                     coupon.current_usage += 1
                     coupon.save()
 
@@ -290,9 +294,9 @@ def checkout(request):
                 order_items = []
                 for cart_item in cart_items:
                     order_item = OrderItem.objects.create(
-                        order = order,
-                        product = cart_item.product,
-                        quantity = cart_item.quantity,
+                        order=order,
+                        product=cart_item.product,
+                        quantity=cart_item.quantity,
                     )
                     product = cart_item.product
                     product.stock -= cart_item.quantity
@@ -313,14 +317,14 @@ def checkout(request):
                 return redirect("order_confirmation", order_id=order.id)
 
     context = {
-        'cart_items': cart_items,
-        'payment_form': payment_form,
-        'shipping_form': shipping_form,
-        'coupon_form': coupon_form,
-        'total_price': cart_total,
+        "cart_items": cart_items,
+        "payment_form": payment_form,
+        "shipping_form": shipping_form,
+        "coupon_form": coupon_form,
+        "total_price": cart_total,
     }
 
-    return render(request, 'checkout.html', context)
+    return render(request, "checkout.html", context)
 
 
 @login_required
@@ -337,13 +341,10 @@ def order_history(request, order_id):
     return render(request, "order_history.html", {"orders": orders})
 
 
-# paypal views 
+# paypal views
 def get_paypal_access_token():
     auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
-    headers = {
-        "Accept": "application/json",
-        "Accept-Language": "en_GB"
-    }
+    headers = {"Accept": "application/json", "Accept-Language": "en_GB"}
 
     auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_CLIENT_SECRET)
     data = {"grant_type": "client_credentials"}
@@ -355,21 +356,22 @@ def get_paypal_access_token():
 @login_required
 def create_paypal_order(request):
     if request.method != "POST":
-        return JsonResponse(("error, method not found"), status = 405)
-
+        return JsonResponse(("error, method not found"), status=405)
 
     cart = get_or_create_cart(request)
-    cart_total = ( CartItem.objects.filter(cart=cart).aggregate(
-        total=Sum(F("product__price") * F("quantity"))
-        )["total"] or 0
+    cart_total = (
+        CartItem.objects.filter(cart=cart).aggregate(
+            total=Sum(F("product__price") * F("quantity"))
+        )["total"]
+        or 0
     )
 
     access_token = get_paypal_access_token()
     headers = {
-    "Accept" : "application/json",
-    "authorization" : f"bearer {access_token}",
+        "Accept": "application/json",
+        "authorization": f"bearer {access_token}",
+    }
 
-}
 
 payload = {
     "intent": "CAPTURE",
@@ -377,15 +379,14 @@ payload = {
         {
             "amount": {
                 "currency_code": "USD",
-                "value": "cart_total" # error code on passing cart_total variable
-                
+                "value": "cart_total",  # error code on passing cart_total variable
             }
         }
-    ]
+    ],
 }
 
-response = requests.post( "https://api-m.sandbox.paypal.com/v2/checkout/orders", 
-    headers = "headers", # headers has not accessed yet
-    json = json.dumps(payload),
+response = requests.post(
+    "https://api-m.sandbox.paypal.com/v2/checkout/orders",
+    headers="headers",  # headers has not accessed yet
+    json=json.dumps(payload),
 )
-        
