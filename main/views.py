@@ -395,7 +395,9 @@ def create_paypal_order(request):
 
     return JsonResponse(response.json())
 
-# @csrf_exempt
-# @login_required
+@csrf_exempt
+@login_required
 
-# def capture_paypal_payment(request):
+def capture_paypal_payment(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid method"}, status = 405)
