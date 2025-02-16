@@ -381,7 +381,7 @@ def create_paypal_order(request):
             {
                 "amount": {
                     "currency_code": "USD",
-                    "value": cart_total,  # error code on passing cart_total variable
+                    "value": cart_total,
                 }
             }
         ],
@@ -389,7 +389,7 @@ def create_paypal_order(request):
 
     response = requests.post(
             "https://api-m.sandbox.paypal.com/v2/checkout/orders",
-            headers = "headers"  # headers has not accessed yet
+            headers = headers,  
             data = json.dumps(payload)
     )
 
