@@ -105,10 +105,67 @@
     paymentMethodSelect.addEventListener("change", function(){
       if (this.value == 'paypal'){
         standardPaymentForm.style.display = "none";
-        
-      }
+        paypalButtonContainer.style.display = "block";
+      } else {
+        standardPaymentForm.style.display = "block";
+        paypalButtonContainer.style.display = "none";
 
+      }
     });
+    paypal.buttons({
+      createOrder: function(data, actions){
+        return fetch('https://127.0.0.1:8000/paypal/create-order/', {
+          method: 'POST',
+          headers: {
+            "ContentType": "application/json",
+            "X-CSRFToken": GetCookie("csrf_token")
+          },
+        })
+        .then(response => response.json())
+        .then(order => order.id);
+      },
+
+
+      onApprove: function(data, actions){
+        return fetch('https://127.0.0.1:8000/paypal/capture-payment/', {
+          method: 'POST',
+          headers: {
+            "ContentType": "application/json",
+            "X-CSRFToken": GetCookie("csrf_token")
+          },
+          body: JSON.stringify({
+            orderID: data.orderID
+          })
+
+        })
+        .then(response => response.json())
+        .then(function(data){
+          if (data.status === 'success'){
+            window.location.href = `https://127.0.0.1:8000/order/confirmation/${data.order_id}/`
+          } else {
+            alert("payment failed, please try again")
+          }
+        });
+      }
+    }).render('#paypal-button-container');
+
+
+    function GetCookie(name){
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '' ){
+        const cookies = doucment.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++){
+          const cookie = cookies[i].trim();
+          if (cookies.substring(0, name.length + 1) === (name + '=')){
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      };
+      return cookieValue;
+    }
+
+  })
 </script>
 
 {% endblock extra_js %}
