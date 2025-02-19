@@ -96,7 +96,19 @@
 {% block extra_js %}
 
 <script>
-  
+  document.addEventListener("DOMContentLoaded", function(e) {
+    // PayPal functionality
+    const paymentMethodSelect = doucment.querySelector("select[name='paymentMethod']");
+    const standardPaymentForm = doucment.getElementById("standard-payment-form");
+    const paypalButtonContainer = doucment.getElementById("paypal-button-container");
+
+    paymentMethodSelect.addEventListener("change", function(){
+      if (this.value == 'paypal'){
+        standardPaymentForm.style.display = "none";
+        
+      }
+
+    });
 </script>
 
 {% endblock extra_js %}
