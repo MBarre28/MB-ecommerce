@@ -112,6 +112,8 @@
 
       }
     });
+
+    // Fetch CSRF token from cookie
     paypal.buttons({
       createOrder: function(data, actions){
         return fetch('https://127.0.0.1:8000/paypal/create-order/', {
@@ -124,8 +126,7 @@
         .then(response => response.json())
         .then(order => order.id);
       },
-
-
+      
       onApprove: function(data, actions){
         return fetch('https://127.0.0.1:8000/paypal/capture-payment/', {
           method: 'POST',
