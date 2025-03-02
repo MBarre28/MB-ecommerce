@@ -362,12 +362,14 @@ def create_paypal_order(request):
     cart_total = (
         CartItem.objects.filter(cart=cart).aggregate(
             total=Sum(F("product__price") * F("quantity"))
-        )["total"]
-        or 0
+        )["total"] or 0
     )
 
     access_token = get_paypal_access_token()
-    headers = {"Accept": "application/json", "authorization": f"bearer {access_token}"}
+    headers = {
+        "Accept": "application/json",
+         "authorization": f"bearer {access_token}",
+        }
 
     payload = {
         "intent": "CAPTURE",
@@ -375,7 +377,7 @@ def create_paypal_order(request):
             {
                 "amount": {
                     "currency_code": "GB",
-                    "value": cart_total,
+                    "value": str(round(cart_total, 2)),
                 }
             }
         ],
@@ -384,10 +386,10 @@ def create_paypal_order(request):
     response = requests.post(
         "https://api-m.sandbox.paypal.com/v2/checkout/orders",
         headers=headers,
-        data=json.dumps(payload),
+        json=payload,
     )
 
-    return JsonResponse(response.json())
+    return JsonResponse(response.json(), status = response.status_code)
 
 
 @csrf_exempt

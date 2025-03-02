@@ -137,18 +137,28 @@
             "X-CSRFToken": GetCookie("csrf_token")
           },
           body: JSON.stringify({
-            orderID: json.orderID
+            orderID: data.orderID
           })
 
         })
-        .then(response => response.json())
+        .then(response =>{
+        if (!response.ok){
+            throw new Error('Network response failed')
+        }
+        response.json()
+        })
         .then(function(data){
-          if (data.status === 'success'){
-            window.location.href = `https://127.0.0.1:8000/order/confirmation/${data.order_id}/`
+          if (data.status == 'success'){
+            window.location.href = `https://127.0.0.1:8000/order/confirmation/${data.order_id}/`;
           } else {
-            alert("payment failed, please try again")
+              alert("payment failed, please try again")
           }
-        });
+        })
+        .catch(error => {
+          console.error("Error", error);
+          alert("404 error code: payment failed")
+
+        })
       }
     }).render('#paypal-button-container');
 
