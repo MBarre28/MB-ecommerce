@@ -103,7 +103,7 @@
     const paypalButtonContainer = doucment.getElementById("paypal-button-container");
 
     paymentMethodSelect.addEventListener("change", function(){
-      if (this.value == 'paypal'){
+      if (this.value === 'paypal'){
         standardPaymentForm.style.display = "none";
         paypalButtonContainer.style.display = "block";
       } else {
