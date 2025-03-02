@@ -137,6 +137,6 @@ LOGOUT_REDIRECT_URL = "product_list"
 
 # paypal payment settings
 
-PAYPAL_CLIENT_ID = ""
-PAYPAL_CLIENT_SECRET = ""
+PAYPAL_CLIENT_ID = "AUcOjNFTGbq2H3eAK82eSDdkxLmx-or54QmwQzcDx3rmdHndRQFUEHhqST3VFN6fuZsOlambSuGdXqLi"
+PAYPAL_CLIENT_SECRET = "AUcOjNFTGbq2H3eAK82eSDdkxLmx-or54QmwQzcDx3rmdHndRQFUEHhqST3VFN6fuZsOlambSuGdXqLi"
 PAYPAL_MODE = "sandbox"
