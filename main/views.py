@@ -344,7 +344,7 @@ def order_history(request, order_id):
 # paypal views
 def get_paypal_access_token():
     auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
-    headers = {"Accept": "application/json", "Accept-Language": "en_GB"}
+    headers = {"Accept": "application/json", "Accept-Language": "en_US"}
 
     auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_CLIENT_SECRET)
     data = {"grant_type": "client_credentials"}
@@ -376,7 +376,7 @@ def create_paypal_order(request):
         "purchase_units": [
             {
                 "amount": {
-                    "currency_code": "GB",
+                    "currency_code": "USD",
                     "value": str(round(cart_total, 2)),
                 }
             }

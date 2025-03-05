@@ -94,8 +94,7 @@
 {% endblock content %}
 
 {% block extra_js %}
-<script src="https://www.paypal.com/sdk/js?client-id=AWts89Frxqd0WfbIAzRa2fjiW9FBuDFTEFW-Yp73B8xwyhElcBTslP9xjVnt8zE-bNJuGhxTnHjBGrAs&currency=GB">
-
+<script src="https://www.paypal.com/sdk/js?client-id=AWts89Frxqd0WfbIAzRa2fjiW9FBuDFTEFW-Yp73B8xwyhElcBTslP9xjVnt8zE-bNJuGhxTnHjBGrAs&currency=USD">
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", function(e) {
@@ -145,7 +144,7 @@
         if (!response.ok){
             throw new Error('Network response failed')
         }
-        response.json()
+        return response.json()
         })
         .then(function(data){
           if (data.status == 'success'){
