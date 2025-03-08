@@ -111,7 +111,7 @@ class Payment(models.Model):
         ('pending', 'Pending'),
         ('completed', 'Completed'),
         ('failed', 'Failed Transaction'),
-        ('Refunded', 'Refunded'),
+        ('refunded', 'Refunded'),
     ]
 
 

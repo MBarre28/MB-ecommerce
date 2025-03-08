@@ -376,11 +376,11 @@ def create_paypal_order(request):
         "purchase_units": [
             {
                 "amount": {
-                    "currency_code": "USD",
+                    "currency_code": "GBP",
                     "value": str(round(cart_total, 2)),
                 }
             }
-        ],
+        ]
     }
 
     response = requests.post(
@@ -452,7 +452,7 @@ def capture_paypal_payment(request):
                 )
 
 
-                cart_item.delete()
+                cart_items.delete()
                 messages.success(request, "Order item save successfully")
                 return JsonResponse({
                     "message": "Order item captured sucessfully",
