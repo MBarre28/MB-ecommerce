@@ -96,20 +96,21 @@
 {% block extra_js %}
 <script src="https://www.paypal.com/sdk/js?client-id=AWts89Frxqd0WfbIAzRa2fjiW9FBuDFTEFW-Yp73B8xwyhElcBTslP9xjVnt8zE-bNJuGhxTnHjBGrAs&currency=GBP">
 </script>
+
 <script>
-  document.addEventListener("DOMContentLoaded", function(e) {
+  document.addEventListener("DOMContentLoaded", function() {
     // PayPal functionality
     const paymentMethodSelect = doucment.querySelector("select[name='paymentMethod']");
-    const standardPaymentForm = doucment.getElementById("standard-payment-form");
+    const standardpaymentForm = doucment.getElementById("standard-payment-form");
     const paypalButtonContainer = doucment.getElementById("paypal-button-container");
 
     paymentMethodSelect.addEventListener("change", function(){
       if (this.value === 'paypal'){
-        standardPaymentForm.style.display = "none";
-        paypalButtonContainer.style.display = "block";
+        standardpaymentForm.style.display = "none";
+        paypalButtonContainer.style.display = "block"
       } else {
-        standardPaymentForm.style.display = "block";
-        paypalButtonContainer.style.display = "none";
+        standardpaymentForm.style.display = "block";
+        paypalButtonContainer.style.display = "none"
 
       }
     });
@@ -121,7 +122,7 @@
           method: 'POST',
           headers: {
             "Content-Type": "application/json", // application
-            "X-CSRFToken": GetCookie("csrf_token")
+            "X-CSRFToken": getCookie("csrf_token")
           },
         })
         .then(response => response.json())
@@ -132,8 +133,8 @@
         return fetch('https://127.0.0.1:8000/paypal/capture-payment/', {
           method: 'POST',
           headers: {
-            "ContentType": "application/json",
-            "X-CSRFToken": GetCookie("csrf_token")
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrf_token")
           },
           body: JSON.stringify({
             orderID: data.orderID
@@ -155,14 +156,14 @@
         })
         .catch(error => {
           console.error("Error", error);
-          alert("404 error code: payment failed")
+          alert("404 error code: error occured during the payment process")
 
         })
       }
     }).render('#paypal-button-container');
 
 
-    function GetCookie(name){
+    function getCookie(name){
       let cookieValue = null;
       if (document.cookie && document.cookie !== '' ){
         const cookies = doucment.cookie.split(';');
@@ -173,11 +174,11 @@
             break;
           }
         }
-      };
+      }
       return cookieValue;
     }
 
-  })
+  });
 </script>
 
 {% endblock extra_js %}
