@@ -377,7 +377,7 @@ def create_paypal_order(request):
             {
                 "amount": {
                     "currency_code": "GBP",
-                    "value": str(round(cart_total, 2)),
+                    "value": str(round(cart_total, 2))
                 }
             }
         ]
