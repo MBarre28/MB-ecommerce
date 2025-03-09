@@ -392,74 +392,75 @@ def create_paypal_order(request):
     return JsonResponse(response.json(), status = response.status_code)
 
 
-@csrf_exempt
 @login_required
+@csrf_exempt
 def capture_paypal_payment(request):
-    if request.method != "POST":
-        return JsonResponse({"error": "Invalid method"}, status=405)
+    try:
+        if request.method != "POST":
+            return JsonResponse({"error": "Invalid method"}, status=405)
 
-    data = json.loads(request.body)
-    order_id = data.get("order_id")
+        data = json.loads(request.body)
+        order_id = data.get("order_id")
 
-    access_token = get_paypal_access_token()
-    headers = {"Content-Type": "application/json", "authorization": f"bearer {access_token}"}
+        access_token = get_paypal_access_token()
+        headers = {"Content-Type": "application/json", "authorization": f"bearer {access_token}"}
 
-    response = requests.post(
-        f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture",
-        headers=headers,
-    )
+        response = requests.post(
+            f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture",
+            headers=headers,
+        )
 
-    response_data = response.json()
+        response_data = response.json()
 
-    if response.status_code == 201:
-        with transaction.atomic():
+        if response.status_code == 201:
+            with transaction.atomic():
 
-            cart = get_or_create_cart(request)
-            cart_items = CartItem.objects.filter(cart=cart).select_related("product")
-            total_price = (
-                CartItem.objects.filter(cart=cart).aggregate(
-                    total=Sum(F("product__price") * F("quantity"))
-                )["total"]
-                or 0
-            )
-            order = Order.objects.get(
-                user = request.user,
-                order_id = order_id,
-                total_price = total_price
-            )
-
-            for cart_item in cart_items:
-                OrderItem.objects.create(
-                    order = order,
-                    product = cart_item.product,
-                    quantity = cart_item.quantity,
+                cart = get_or_create_cart(request)
+                cart_items = CartItem.objects.filter(cart=cart).select_related("product")
+                total_price = (
+                    CartItem.objects.filter(cart=cart).aggregate(
+                        total=Sum(F("product__price") * F("quantity"))
+                    )["total"]
+                    or 0
                 )
-
-
-                product = cart_item.product
-                product.stock -= cart_item.quantity
-                product.save()
-
-                payment = Payment.objects.create(
+                order = Order.objects.get(
                     user = request.user,
-                    order = order,
-                    payment_method = "PayPal",
-                    amount = total_price,
-                    payment_status = "Completed",
-                    payment_order_id = order_id,
-                    paypal_payment_id = response_data['id']
-
+                    order_id = order_id,
+                    total_price = total_price
                 )
 
+                for cart_item in cart_items:
+                    OrderItem.objects.create(
+                        order = order,
+                        product = cart_item.product,
+                        quantity = cart_item.quantity,
+                    )
 
-                cart_items.delete()
-                messages.success(request, "Order item save successfully")
-                return JsonResponse({
-                    "message": "Order item captured sucessfully",
-                    "order_id": order.id
-                })
-            
-    return JsonResponse({
-        "status": "error",
-        "message": "order item capture failed"
-    }, status = 400)
+
+                    product = cart_item.product
+                    product.stock -= cart_item.quantity
+                    product.save()
+
+                    Payment.objects.create(
+                        user = request.user,
+                        order = order,
+                        payment_method = "PayPal",
+                        amount = total_price,
+                        payment_status = "Completed",
+                        payment_order_id = order_id,
+                        paypal_payment_id = response_data['id']
+
+                    )
+
+
+                    cart_items.delete()
+                    messages.success(request, "Order item save successfully")
+                    return JsonResponse({
+                        "message": "Order item captured sucessfully",
+                        "order_id": order.id
+                    })
+    except:
+        return JsonResponse({
+            "status": "error",
+            "message": "order item capture failed"
+        }, status = 400)
