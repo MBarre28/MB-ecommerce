@@ -344,7 +344,7 @@ def order_history(request, order_id):
 # paypal views
 def get_paypal_access_token():
     auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
-    headers = {"Accept": "application/json", "Accept-Language": "en_US"}
+    headers = {"Content-Type": "application/json", "Accept-Language": "en_US"}
 
     auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_CLIENT_SECRET)
     data = {"grant_type": "client_credentials"}
@@ -367,7 +367,7 @@ def create_paypal_order(request):
 
     access_token = get_paypal_access_token()
     headers = {
-        "Accept": "application/json",
+        "Content-Type": "application/json",
          "authorization": f"bearer {access_token}",
         }
 
@@ -402,7 +402,7 @@ def capture_paypal_payment(request):
     order_id = data.get("order_id")
 
     access_token = get_paypal_access_token()
-    headers = {"Accept": "application/json", "authorization": f"bearer {access_token}"}
+    headers = {"Content-Type": "application/json", "authorization": f"bearer {access_token}"}
 
     response = requests.post(
         f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture",
