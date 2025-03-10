@@ -429,95 +429,108 @@ def capture_paypal_payment(request):
         data = json.loads(request.body)
         order_id = data.get("order_id")
 
-    access_token = get_paypal_access_token()
-    if not access_token:
-        return JsonResponse({"error": "Failed to create PayPal order"}, status = 500)
-    
-
-    headers = {
-        "Content-Type": "application/json",
-        "authorization": f"bearer {access_token}"
-    }
-
-
-    # Verify order details
-    verify_response = requests.post(
-        f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}",
-        headers=headers,
-    )
-
-    verify_response.raise_for_status()
-    order_details = verify_response.json()
-
-
-    # Capture payment details
-    capture_response = requests.post(
-        f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture",
-        headers=headers,
-    )
-
-    capture_response.raise_for_status()
-
-    response_data = capture_response.json()
-
-    # atomic transaction check
-
-    with transaction.atomic():
-
-        cart = get_or_create_cart(request)
-        cart_items = CartItem.objects.filter(cart=cart).select_related("product")
-        total_price = CartItem.objects.filter(cart=cart).aggregate(
-        total = Sum(F("product__price") * F("quantity"))
-        )["total"] or 0
+        access_token = get_paypal_access_token()
+        if not access_token:
+            return JsonResponse({"error": "Failed to create PayPal order"}, status = 500)
         
+
+        headers = {
+            "Content-Type": "application/json",
+            "authorization": f"bearer {access_token}"
+        }
+
+
+        # Verify order details
+        verify_response = requests.post(
+            f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}",
+            headers=headers,
+        )
+
+        verify_response.raise_for_status()
+        order_details = verify_response.json()
+
+
+        # Capture payment details
+        capture_response = requests.post(
+            f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture",
+            headers=headers,
+        )
+
+        capture_response.raise_for_status()
+
+        response_data = capture_response.json()
+
+        # atomic transaction check
+
+        with transaction.atomic():
+            cart = get_or_create_cart(request)
+            cart_items = CartItem.objects.filter(cart=cart).select_related("product")
+            total_price = CartItem.objects.filter(cart=cart).aggregate(
+            total = Sum(F("product__price") * F("quantity"))
+        )["total"] or 0
+            
 
         # create order 
         order = Order.objects.get(
-            user = request.user,
-            total_price = total_price
+        user = request.user,
+        total_price = total_price
         )
 
-        # create order items and update order quantity
+         # create order items and update order quantity
         for cart_item in cart_items:
             OrderItem.objects.create(
-                order = order,
-                product = cart_item.product,
-                quantity = cart_item.quantity,
-            )
+            order = order,
+            product = cart_item.product,
+            quantity = cart_item.quantity,
+        )
 
 
-            product = cart_item.product
-            product.stock -= cart_item.quantity
-            product.save()
+        product = cart_item.product
+        product.stock -= cart_item.quantity
+        product.save()
 
-            # create payment 
-            Payment.objects.create(
-                user = request.user,
-                order = order,
-                payment_method = "PayPal",
-                amount = total_price,
-                payment_status = "Completed",
-                payment_order_id = order_id,
-                transaction_id = response_data.get('id'),
-                paypal_payment_id = response_data['id'],
+        # create payment 
+        Payment.objects.create(
+            user = request.user,
+            order = order,
+            payment_method = "PayPal",
+            amount = total_price,
+            payment_status = "Completed",
+            payment_order_id = order_id,
+            transaction_id = response_data.get('id'),
+            paypal_payment_id = response_data['id'],
 
-            )
-            # clearing the cart items 
-            cart_items.delete()
-            messages.success(request, "Order item save successfully")
+        )
+        # clearing the cart items 
+        cart_items.delete()
+        messages.success(request, "Order item save successfully")
 
 
 
-            return JsonResponse({
-                "message": "Order item captured sucessfully",
-                "order_id": order.id
-            })
-        
-    
-    
+        return JsonResponse({
+            "message": "Order item captured sucessfully",
+            "order_id": order.id
+        })
+
+
+    except requests.RequestException as e:
+        print(f"Unexpected error in capture_paypal_payment {e}")
+
+
         return JsonResponse({
             "status": "error",
             "message": "Failed to capture PayPal payment"
             }, status = 400)
     
+    except requests.RequestException as e:
+        print(f"Unexpected error has occurred capture_paypal_payment {e}")
+        return JsonResponse({
+            "status": "error",
+            "message": "Unexpected error has occurred"
+            }, status = 500)
     
+
+
+
+    
+
