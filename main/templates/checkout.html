@@ -94,7 +94,7 @@
 {% endblock content %}
 
 {% block extra_js %}
-<script src="https://www.paypal.com/sdk/js?client-id=AWts89Frxqd0WfbIAzRa2fjiW9FBuDFTEFW-Yp73B8xwyhElcBTslP9xjVnt8zE-bNJuGhxTnHjBGrAs&currency=USD">  
+<script src="https://www.paypal.com/sdk/js?client-id=AWts89Frxqd0WfbIAzRa2fjiW9FBuDFTEFW-Yp73B8xwyhElcBTslP9xjVnt8zE-bNJuGhxTnHjBGrAs&currency=GBP">  
 </script>
 
 <script>
@@ -116,7 +116,7 @@
           }
       });
 
-      // Helper function for CSRF token
+      // Helper function for CSRF token via cookie validation
       function getCookie(name){
       let cookieValue = null;
       if (document.cookie && document.cookie !== '' ){
@@ -149,7 +149,7 @@
           method: 'POST',
           headers: {
             "Content-Type": "application/json", // application
-            "X-CSRFToken": getCookie("csrftoken"),
+            "X-CSRFToken": getCookie("csrftoken")
           },
         })
         .then(response => {
@@ -163,7 +163,7 @@
           console.error("Error creating the Paypal order:", error);
           alert("Failed to create the paypal order, please try again.");
           throw error;
-        })
+        });
       },
       
       // Finalise the transation on the server
@@ -185,7 +185,7 @@
         if (!response.ok){
             throw new Error('Payment capture failed.')
         }
-        return response.json()
+        return response.json();
         })
 
         .then(function(data){
@@ -198,7 +198,7 @@
 
         .catch(error => {
           console.error("Payment Error", error);
-          alert("Payment processing failed, please contact support.")
+          alert("Payment processing failed, please contact support.");
 
         });
       },
@@ -206,7 +206,7 @@
       // Handle cancellation 
       
       onCancel: function(data){
-        console.log('transation cancellation', data);
+        console.log('Paypal payment cancelled.', data);
         alert('Payment processing cancelled.');
 
       },

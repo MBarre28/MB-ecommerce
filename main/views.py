@@ -497,8 +497,8 @@ def capture_paypal_payment(request):
             amount = total_price,
             payment_status = "Completed",
             payment_order_id = order_id,
-            transaction_id = response_data.get('id'),
-            paypal_payment_id = response_data['id'],
+            # transaction_id = response_data.get('id'),
+            # paypal_payment_id = response_data['id'],
 
         )
         # clearing the cart items 
