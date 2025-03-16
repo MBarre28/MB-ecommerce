@@ -60,7 +60,7 @@ def login_view(request):
                 messages.error(request, "User not found, invalid username or password.")
         else:
             messages.error(request, "User not found, invalid username or password.")
-            return render(request, "checkout.html", {"form": form})
+            return render(request, "login.html", {"form": form})
     else:
         form = AuthenticationForm()
         return render(request, "login.html", {"form": form})
