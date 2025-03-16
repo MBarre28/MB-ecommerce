@@ -132,7 +132,13 @@
       return cookieValue;
     }
 
-    // Fetch CSRF token from cookie
+    // Fetch CSRF token from cookie, ensuring the paypal script is loaded before initialisation. 
+    if (window.paypal){
+      initPayButtons();
+    } else {
+      console.error('PayPal SDK not loaded')
+    }
+    
 
   function initPayButtons(){
     paypal.Buttons({
@@ -160,7 +166,7 @@
         })
       },
       
-      // finalise the transation on the server
+      // Finalise the transation on the server
 
       onApprove: function(data, actions){
         return fetch('https://127.0.0.1:8000/paypal/capture-payment/', {

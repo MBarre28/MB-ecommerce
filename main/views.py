@@ -392,7 +392,7 @@ def create_paypal_order(request):
             "purchase_units": [
                 {
                     "amount": {
-                        "currency_code": "GBP",
+                        "currency_code": "USD",
                         "value": str(usd_total)
                     }
                 }
