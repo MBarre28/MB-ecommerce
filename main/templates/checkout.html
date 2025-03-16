@@ -59,7 +59,7 @@
           </div>
         </div>
 
-        <!-- Payment info method  -->
+        <!-- Payment info -->
         <div class="card mb-4">
           <div class="card-header">
             <h3 class="card-title mb-0">Payment Method</h3>
@@ -69,7 +69,7 @@
             {{ payment_form.as_p }}
             </div>
             <!-- Paypal Button -->
-             <div class="mb-3" id="paypal-button-container" style="display: none;"></div>
+             <div class="mt-3" id="paypal-button-container" style="display: none;"></div>
           </div>
         </div>
 
@@ -94,15 +94,17 @@
 {% endblock content %}
 
 {% block extra_js %}
-<script src="https://www.paypal.com/sdk/js?client-id=AWts89Frxqd0WfbIAzRa2fjiW9FBuDFTEFW-Yp73B8xwyhElcBTslP9xjVnt8zE-bNJuGhxTnHjBGrAs&currency=USD"> </script>
+<script src="https://www.paypal.com/sdk/js?client-id=AWts89Frxqd0WfbIAzRa2fjiW9FBuDFTEFW-Yp73B8xwyhElcBTslP9xjVnt8zE-bNJuGhxTnHjBGrAs&currency=USD">  
+</script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-      // PayPal functionality
-      const paymentMethodSelect = document.querySelector("select[name='paymentMethod']");
+  document.addEventListener('DOMContentLoaded', function() {
+      // Payment functionality
+      const paymentMethodSelect = document.querySelector("select[name='payment_method']");
       const standardpaymentForm = document.getElementById("standard-payment-form");
       const paypalButtonContainer = document.getElementById("paypal-button-container");
 
+      // Payment method toggle 
       paymentMethodSelect.addEventListener('change', function(){
           if (this.value === 'paypal'){
             standardpaymentForm.style.display = 'none';
@@ -114,58 +116,11 @@
           }
       });
 
-    // Fetch CSRF token from cookie
-    paypal.buttons({
-      createOrder: function(data, actions){
-        return fetch('https://127.0.0.1:8000/paypal/create-order/', {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json", // application
-            "X-CSRFToken": getCookie("csrftoken")
-          },
-        })
-        .then(response => response.json())
-        .then(order => order.id);
-      },
-      
-      onApprove: function(data, actions){
-        return fetch('https://127.0.0.1:8000/paypal/capture-payment/', {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCookie("csrf_token")
-          },
-          body: JSON.stringify({
-            orderID: data.orderID
-          })
-
-        })
-        .then(response =>{
-        if (!response.ok){
-            throw new Error('Network response failed')
-        }
-        return response.json()
-        })
-        .then(function(data){
-          if (data.status == 'success'){
-            window.location.href = `https://127.0.0.1:8000/order/confirmation/${data.order_id}/`;
-          } else {
-              alert("payment failed, please try again")
-          }
-        })
-        .catch(error => {
-          console.error("Error", error);
-          alert("404 error code: error occured during the payment process")
-
-        })
-      }
-    }).render('#paypal-button-container');
-
-
-    function getCookie(name){
+      // Helper function for CSRF token
+      function getCookie(name){
       let cookieValue = null;
       if (document.cookie && document.cookie !== '' ){
-        const cookies = doucment.cookie.split(';');
+        const cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++){
           const cookie = cookies[i].trim();
           if (cookies.substring(0, name.length + 1) === (name + '=')){
@@ -176,6 +131,89 @@
       }
       return cookieValue;
     }
+
+    // Fetch CSRF token from cookie
+
+  function initPayButtons(){
+    paypal.Buttons({
+      // Create order on the server
+
+      createOrder: function(data, actions){
+        return fetch('https://127.0.0.1:8000/paypal/create-order/', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json", // application
+            "X-CSRFToken": getCookie("csrftoken"),
+          },
+        })
+        .then(response => {
+          if (!response.ok){
+            throw new Error('Network response failed');
+          }
+          return response.json();
+        })
+        .then(order => order.id)
+        .catch(error => {
+          console.error("Error creating the Paypal order:", error);
+          alert("Failed to create the paypal order, please try again.");
+          throw error;
+        })
+      },
+      
+      // finalise the transation on the server
+
+      onApprove: function(data, actions){
+        return fetch('https://127.0.0.1:8000/paypal/capture-payment/', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrf_token")
+          },
+
+          body: JSON.stringify({
+            orderID: data.orderID
+          })
+
+        })
+        .then(response => {
+        if (!response.ok){
+            throw new Error('Payment capture failed.')
+        }
+        return response.json()
+        })
+
+        .then(function(data){
+          if (data.status == 'success'){
+            window.location.href = `https://127.0.0.1:8000/order/confirmation/${data.order_id}/`;
+          } else {
+              throw new Error("payment failed, please try again.")
+          }
+        })
+
+        .catch(error => {
+          console.error("Payment Error", error);
+          alert("Payment processing failed, please contact support.")
+
+        });
+      },
+      
+      // Handle cancellation 
+      
+      onCancel: function(data){
+        console.log('transation cancellation', data);
+        alert('Payment processing cancelled.');
+
+      },
+
+      // Handle errors
+
+      onError: function(err){
+        console.error('Paypal Button Error:', err); 
+        alert('An error occurred with Paypal, please try again later.');
+      }
+    
+    }).render('#paypal-button-container');
+  }
 
   });
 </script>

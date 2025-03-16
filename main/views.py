@@ -508,7 +508,7 @@ def capture_paypal_payment(request):
 
 
         return JsonResponse({
-            "message": "Order item captured sucessfully",
+            "message": "Order item captured successfully",
             "order_id": order.id
         })
 
