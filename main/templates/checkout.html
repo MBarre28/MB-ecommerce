@@ -94,7 +94,7 @@
 {% endblock content %}
 
 {% block extra_js %}
-<script src="https://www.paypal.com/sdk/js?client-id=AWts89Frxqd0WfbIAzRa2fjiW9FBuDFTEFW-Yp73B8xwyhElcBTslP9xjVnt8zE-bNJuGhxTnHjBGrAs&currency=GBP">  
+<script src="https://www.paypal.com/sdk/js?client-id=AWts89Frxqd0WfbIAzRa2fjiW9FBuDFTEFW-Yp73B8xwyhElcBTslP9xjVnt8zE-bNJuGhxTnHjBGrAs&currency=USD">  
 </script>
 
 <script>
@@ -123,7 +123,7 @@
         const cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++){
           const cookie = cookies[i].trim();
-          if (cookies.substring(0, name.length + 1) === (name + '=')){
+          if (cookie.substring(0, name.length + 1) === (name + '=')){
             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
             break;
           }
@@ -145,12 +145,12 @@
       // Create order on the server
 
       createOrder: function(data, actions){
-        return fetch('https://127.0.0.1:8000/paypal/create-order/', {
+        return fetch('http://127.0.0.1:8000/paypal/create-order/', {
           method: 'POST',
           headers: {
             "Content-Type": "application/json", // application
             "X-CSRFToken": getCookie("csrftoken")
-          },
+          }
         })
         .then(response => {
           if (!response.ok){
@@ -169,7 +169,7 @@
       // Finalise the transation on the server
 
       onApprove: function(data, actions){
-        return fetch('https://127.0.0.1:8000/paypal/capture-payment/', {
+        return fetch('http://127.0.0.1:8000/paypal/capture-payment/', {
           method: 'POST',
           headers: {
             "Content-Type": "application/json",
@@ -190,7 +190,7 @@
 
         .then(function(data){
           if (data.status == 'success'){
-            window.location.href = `https://127.0.0.1:8000/order/confirmation/${data.order_id}/`;
+            window.location.href = `http://127.0.0.1:8000/order/confirmation/${data.order_id}/`;
           } else {
               throw new Error("payment failed, please try again.")
           }

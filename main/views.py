@@ -371,13 +371,14 @@ def create_paypal_order(request):
 
     try:
         cart = get_or_create_cart(request)
-        cart_total = (
-            CartItem.objects.filter(cart=cart).aggregate(
+        cart_total = CartItem.objects.filter(cart=cart).aggregate(
                 total=Sum(F("product__price") * F("quantity"))
             )["total"] or 0
-        )
+        
 
-        usd_total = round(cart_total * 1.3, 2) 
+
+        # usd_total = round(cart_total * 1.3, 2) 
+        usd_total = round(cart_total, 2)
 
         access_token = get_paypal_access_token()
         if not access_token:
@@ -427,16 +428,19 @@ def capture_paypal_payment(request):
     
     try:
         data = json.loads(request.body)
-        order_id = data.get("order_id")
+        order_id = data.get("orderID")
+
+        if not order_id: 
+            return JsonResponse({"error": "Invalid order ID"}, status= 400)
 
         access_token = get_paypal_access_token()
         if not access_token:
-            return JsonResponse({"error": "Failed to create PayPal order"}, status = 500)
+            return JsonResponse({"error": "Failed to get PayPal order"}, status = 500)
         
 
         headers = {
             "Content-Type": "application/json",
-            "authorization": f"bearer {access_token}"
+            "Authorization": f"bearer {access_token}"
         }
 
 
@@ -493,22 +497,18 @@ def capture_paypal_payment(request):
         Payment.objects.create(
             user = request.user,
             order = order,
-            payment_method = "PayPal",
+            payment_method = "paypal",
             amount = total_price,
-            payment_status = "Completed",
-            payment_order_id = order_id,
-            # transaction_id = response_data.get('id'),
-            # paypal_payment_id = response_data['id'],
+            payment_status = "completed",
+            transaction_id = response_data.get('id'),
 
         )
         # clearing the cart items 
         cart_items.delete()
-        messages.success(request, "Order item save successfully")
-
 
 
         return JsonResponse({
-            "message": "Order item captured successfully",
+            "status": "success",
             "order_id": order.id
         })
 
