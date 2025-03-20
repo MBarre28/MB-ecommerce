@@ -431,7 +431,7 @@ def capture_paypal_payment(request):
         order_id = data.get("orderID")
 
         if not order_id: 
-            return JsonResponse({"error": "Invalid order ID"}, status= 400)
+            return JsonResponse({"error": "Invalid order ID"}, status = 400)
 
         access_token = get_paypal_access_token()
         if not access_token:
@@ -509,7 +509,7 @@ def capture_paypal_payment(request):
 
         return JsonResponse({
             "status": "success",
-            "order_id": order.ID
+            "order_id": order.id
         })
 
 
