@@ -35,6 +35,28 @@
           <a href="{% url 'cart_detail' %}" class="nav-link">Cart</a>
         </li>
       </ul>
+
+      <!-- Conditional display -->
+       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        {% if user.is_authenticated %}
+        <li class="nav item-dropdown">
+          <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ user.username }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li> <a href="{% url 'order_history' %}" class="dropdown-item" label="order"> My order </a></li>
+            <li> <hr class="dropdown divider"></li>
+            <li> <a href="{% url 'logout' %}" class="dropdown-item" label="order"> Log out</a></li>
+          </ul>
+        </li>
+
+        {% else %}
+
+        <li class="nav-item">
+          <a href="{% url 'login' %}" class="nav-link">Login</a>
+        </li>
+        {% endif %}
+       </ul>
     </nav>
 
     <div class="main-style">
