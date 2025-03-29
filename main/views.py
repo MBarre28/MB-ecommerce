@@ -25,7 +25,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
 
-@login_required
 # registration form for the user account
 def register(request):
     if request.method == "POST":
@@ -34,7 +33,7 @@ def register(request):
             user = form.save()
             login(request, user)
             messages.success(request, "User created sucessfully.")
-            return redirect(request, "product_list")
+            return redirect("product_list")
         else:
             messages.error(request, "Invalid username or password, try again.")
     else:
@@ -336,8 +335,11 @@ def order_confirmation(request, order_id):
 
 # This view is use to display the order history page.
 @login_required
-def order_history(request, order_id):
-    orders = Order.objects.filter(order_id, user=request.user).order_by("-created_at")
+def order_history(request):
+    orders = Order.objects.filter(user=request.user).select_related('payment').prefetch_related(
+        'products',
+        'items',
+    ).order_by('-created_at')
     return render(request, "order_history.html", {"orders": orders})
 
 
@@ -475,7 +477,7 @@ def capture_paypal_payment(request):
             
 
         # create order 
-        order = Order.objects.get(
+        order = Order.objects.create(
         user = request.user,
         total_price = total_price
         )

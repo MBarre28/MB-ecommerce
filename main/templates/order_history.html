@@ -23,12 +23,12 @@
                 <div class="d-flex justify-content-between align-items center">
                     <div>
                         <p class="mb-0"> Payment Status:
-                            <spam
-                                class="badge {% if order.payment.payment_status == 'completed'%}bg-success{% elif order.payment.payment_status == 'pending'%}bg-warning{% else %}bg-danger {% endif %}">
+                            <spam class="badge {% if order.payment.payment_status == 'completed'%}bg-success{% elif order.payment.payment_status == 'pending'%}bg-warning{% else %}bg-danger {% endif %}">
+                                {{ order.payment.payment_status | title }}
                             </spam>
                         </p>
-                        <a href="{% url 'order_detail' order.id %}"
-                            class="btn btn-outline-primary btn-small"></a>
+                        <a href="{% url 'order_confirmation' order.id %}"
+                            class="btn btn-outline-primary btn-small"> view details </a>
                     </div>
                 </div>
             </div>

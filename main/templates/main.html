@@ -29,9 +29,6 @@
           <a href="#" class="nav-link">About</a>
         </li>
         <li class="nav-item">
-          <a href="{% url 'categories_list' %}" class="nav-link">Categories</a>
-        </li>
-        <li class="nav-item">
           <a href="{% url 'cart_detail' %}" class="nav-link">Cart</a>
         </li>
       </ul>
@@ -53,11 +50,26 @@
         {% else %}
 
         <li class="nav-item">
-          <a href="{% url 'login' %}" class="nav-link">Login</a>
+          <a href="{% url 'login' %}" class="nav-link"> Login </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'register' %}" class="nav-link"> Register </a>
         </li>
         {% endif %}
        </ul>
     </nav>
+    <!-- Message -->
+    {% if messages %}
+    <div class="messages mt-3">
+      <!-- For loop to itrate the messages with the conditional statement -->
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissable fade show" role = "alert">
+        {{ message }}
+        <button class="btn-close" aria-label="close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
 
     <div class="main-style">
       {% block content %}
