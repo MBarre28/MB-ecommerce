@@ -149,7 +149,7 @@
           method: 'POST',
           headers: {
             "Content-Type": "application/json", // application
-            "X-CSRFToken": getCookie("csrftoken")
+            "X-CSRFToken": getCookie("csrf_token")
           }
         })
         .then(response => {
@@ -192,7 +192,7 @@
           if (data.status == 'success'){
             window.location.href = `http://127.0.0.1:8000/order/confirmation/${data.order_id}/`;
           } else {
-              throw new Error("payment failed, please try again.")
+              throw new Error("payment failed, please try again.");
           }
         })
 
