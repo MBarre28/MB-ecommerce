@@ -517,14 +517,12 @@ def capture_paypal_payment(request):
 
     except requests.RequestException as e:
         print(f"Unexpected error in capture_paypal_payment {e}")
-
-
         return JsonResponse({
             "status": "error",
             "message": "Failed to capture PayPal payment"
             }, status = 400)
     
-    except requests.RequestException as e:
+    except Exception as e: # Exception instead of requests.RequestException
         print(f"Unexpected error has occurred capture_paypal_payment {e}")
         return JsonResponse({
             "status": "error",
