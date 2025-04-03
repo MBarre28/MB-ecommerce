@@ -424,7 +424,6 @@ def create_paypal_order(request):
 @login_required
 @csrf_exempt
 def capture_paypal_payment(request):
-
     if request.method != "POST":
         return JsonResponse({"error": "Invalid method"}, status=405)
     
@@ -433,77 +432,125 @@ def capture_paypal_payment(request):
         order_id = data.get("orderID")
 
         if not order_id: 
-            return JsonResponse({"error": "Invalid order ID"}, status = 400)
+            return JsonResponse({"error": "Invalid order ID"}, status=400)
 
         access_token = get_paypal_access_token()
         if not access_token:
-            return JsonResponse({"error": "Failed to get PayPal order"}, status = 500)
+            return JsonResponse({"error": "Failed to get PayPal access token"}, status=500)
         
-
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"bearer {access_token}"
+            "Authorization": f"Bearer {access_token}"
         }
 
-
-        # Verify order details
-        verify_response = requests.post(
-            f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}",
-            headers=headers,
-        )
-
-        verify_response.raise_for_status()
-        order_details = verify_response.json()
-
-
-        # Capture payment details
+        # Single request to capture the order
+        capture_url = f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture"
         capture_response = requests.post(
-            f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture",
+            capture_url,
             headers=headers,
+            json={}  # Empty payload for capture
         )
 
-        capture_response.raise_for_status()
+        # Check for successful capture
+        if capture_response.status_code not in [200, 201]:
+            print(f"PayPal Capture Error: {capture_response.text}")
+            return JsonResponse({
+                "status": "error", 
+                "message": "Payment capture failed"
+            }, status=400)
 
         response_data = capture_response.json()
+        
+        # Detailed logging of response data
+        print("Full PayPal Response:", json.dumps(response_data, indent=2))
 
-        # atomic transaction check
+        # Verify payment details with more robust error checking
+        payment_status = response_data.get('status')
+        if payment_status != 'COMPLETED':
+            return JsonResponse({
+                "status": "error", 
+                "message": "Payment not completed"
+            }, status=400)
 
+        # More robust amount extraction
+        try:
+            purchase_units = response_data.get('purchase_units', [])
+            if not purchase_units:
+                raise KeyError("No purchase units found")
+            
+            # Updated amount extraction
+            payments = purchase_units[0].get('payments', {})
+            captures = payments.get('captures', [])
+            
+            if not captures:
+                raise KeyError("No captures found")
+            
+            amount_data = captures[0].get('amount', {})
+            amount = amount_data.get('value')
+            
+            if not amount:
+                raise KeyError("No amount value found")
+        except (IndexError, KeyError) as e:
+            print(f"Amount extraction error: {e}")
+            print("Response data structure:", json.dumps(response_data, indent=2))
+            return JsonResponse({
+                "status": "error", 
+                "message": "Failed to extract payment amount"
+            }, status=400)
+
+        transaction_id = captures[0].get('id')
+
+        # Atomic transaction to create order and payment
         with transaction.atomic():
             cart = get_or_create_cart(request)
             cart_items = CartItem.objects.filter(cart=cart).select_related("product")
-            total_price = CartItem.objects.filter(cart=cart).aggregate(
-            total = Sum(F("product__price") * F("quantity"))
-        )["total"] or 0
             
+            total_price = CartItem.objects.filter(cart=cart).aggregate(
+                total=Sum(F("product__price") * F("quantity"))
+            )["total"] or 0
 
-        # create order 
-        order = Order.objects.create(
-        user = request.user,
-        total_price = total_price
-        )
+            # Convert both to Decimal for comparison
+            from decimal import Decimal
+            paypal_amount = Decimal(str(amount))
+            total_price_decimal = Decimal(str(total_price))
 
-         # create order items and update order quantity
-        for cart_item in cart_items:
-            OrderItem.objects.create(
-            order = order,
-            product = cart_item.product,
-            quantity = cart_item.quantity,
-        )
+            # Verify amount matches
+            if abs(paypal_amount - total_price_decimal) > Decimal('0.01'):
+                return JsonResponse({
+                    "status": "error", 
+                    "message": f"Payment amount mismatch. Expected {total_price_decimal}, got {paypal_amount}"
+                }, status=400)
 
+            # Create order
+            order = Order.objects.create(
+                user=request.user,
+                total_price=total_price_decimal
+            )
 
-        product = cart_item.product
-        product.stock -= cart_item.quantity
-        product.save()
+            # Create order items and update product stock
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    quantity=cart_item.quantity,
+                )
+                
+                # Update product stock
+                product = cart_item.product
+                product.stock -= cart_item.quantity
+                product.save()
 
-        # create payment 
-        Payment.objects.create(
-            user = request.user,
-            order = order,
-            payment_method = "paypal",
-            amount = total_price,
-            payment_status = "completed",
-            transaction_id = response_data.get('id'),
+            # Create payment record
+            Payment.objects.create(
+                user=request.user,
+                order=order,
+                payment_method="paypal",
+                amount=total_price_decimal,
+                payment_status="completed",
+                transaction_id=transaction_id,
+            )
 
+<<<<<<< HEAD
         )
         # clearing the cart items 
         cart_items.delete()
@@ -534,3 +581,23 @@ def capture_paypal_payment(request):
 
     
 
+=======
+            # Clear cart items
+            cart_items.delete()
+
+            return JsonResponse({
+                "status": "success",
+                "order_id": order.id
+            })
+
+    except Exception as e:
+        # More detailed error logging
+        import traceback
+        print(f"Unexpected error in capture_paypal_payment: {e}")
+        print("Full traceback:", traceback.format_exc())
+        
+        return JsonResponse({
+            "status": "error",
+            "message": str(e)
+        }, status=500)
+>>>>>>> 0a396d97bfc21c4ad5acbf0b13e24a162cfd8568

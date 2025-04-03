@@ -1,18 +1,14 @@
-{% extends "main.html" %} 
+{% extends "main.html" %}
 
 {% block content %}
 <!-- Checkout page -->
-
 <div class="container py-5">
   <h1 class="mb-4 fs-4">Checkout</h1>
 
   {% if messages %}
   <div class="messages mb-4">
-    <!-- For loop to itrate the messages with the conditional statement -->
     {% for message in messages %}
-    <div
-      class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-success {% endif %} rounded"
-    >
+    <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-success {% endif %} rounded">
       {{ message }}
     </div>
     {% endfor %}
@@ -20,7 +16,6 @@
   {% endif %}
 
   <div class="row">
-
     <!-- Order Summary -->
     <div class="col-md-4 order-md-2 mb-4">
       <div class="card">
@@ -28,200 +23,212 @@
           <h3 class="card-title mb-0">Order Summary</h3>
         </div>
         <div class="card-body">
-            
           {% for item in cart_items %}
-          <div class="d-flex justify-content-between mb-3">
-            <h6 class="my-0">{{ item.product.name }}</h6>
-            <small class="text-muted"> Quantity: {{ item.quantity }}</small>
+          <div class="mb-3">
+            <div class="d-flex justify-content-between">
+              <h6 class="my-0">{{ item.product.name }}</h6>
+              <small class="text-muted">Quantity: {{ item.quantity }}</small>
+            </div>
+            <div class="text-muted text-end">£{{ item.get_total|floatformat:2 }}</div>
           </div>
-          <div class="text-muted"> £{{ item.get_total }} </div>
           {% endfor %}
 
           <hr>
           <div class="d-flex justify-content-between">
-            <span> Total: </span>
-            <strong> £{{ total_price }}</strong>
+            <span class="fw-bold">Total:</span>
+            <strong>£{{ total_price|floatformat:2 }}</strong>
           </div>
         </div>
       </div>
     </div>
 
     <div class="col-md-8 order-md-1">
-      <form method="post">
+      <form method="post" id="checkout-form">
         {% csrf_token %}
 
-        <!-- Shipping Address  -->
+        <!-- Shipping Address -->
         <div class="card mb-4">
           <div class="card-header">
             <h3 class="card-title mb-0">Shipping Address</h3>
           </div>
-          <div class="card-body">{{ shipping_form.as_p }}
+          <div class="card-body">
+            <div class="row">
+              {% for field in shipping_form %}
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">{{ field.label }}</label>
+                  {{ field }}
+                  {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors }}</div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
           </div>
         </div>
 
-        <!-- Payment info -->
+        <!-- Payment Method -->
         <div class="card mb-4">
           <div class="card-header">
             <h3 class="card-title mb-0">Payment Method</h3>
           </div>
           <div class="card-body">
             <div id="standard-payment-form">
-            {{ payment_form.as_p }}
+              <div class="mb-3">
+                <label class="form-label">Select Payment Method</label>
+                {{ payment_form.payment_method }}
+              </div>
             </div>
+            
             <!-- Paypal Button -->
-             <div class="mt-3" id="paypal-button-container" style="display: none;"></div>
+            <div class="mt-3" id="paypal-button-container" style="display: none;"></div>
           </div>
         </div>
 
         <!-- Coupon Code -->
         <div class="card mb-4">
           <div class="card-header">
-            <h3 class="card-title mb-0">Do you have a coupon to purchase?</h3>
+            <h3 class="card-title mb-0">Have a Coupon?</h3>
           </div>
-          <div class="card-body">{{ coupon_form.as_p }}</div>
+          <div class="card-body">
+            <div class="input-group">
+              {{ coupon_form.coupon_code }}
+              <button type="button" class="btn btn-outline-secondary">Apply Coupon</button>
+            </div>
+            {% if coupon_form.coupon_code.errors %}
+              <div class="text-danger small mt-2">{{ coupon_form.coupon_code.errors }}</div>
+            {% endif %}
+          </div>
         </div>
-        <button class="btn btn-outline-success btn-lg btn-block w-100" type="submit"> Place Order </button> 
+
+        <button class="btn btn-outline-success btn-lg btn-block w-100" type="submit">
+          Place Order
+        </button>
       </form>
     </div>
-
-  
   </div>
-
-
-
 </div>
-
 {% endblock content %}
 
 {% block extra_js %}
+<<<<<<< HEAD
 <script src="https://www.paypal.com/sdk/js?client-id=ASqKXHWmxqA9P4V1Y3fwLKbk2OHbEmHriCa4XjVC3pXmez6WNSyD74Bq4nkY9pjG1fudUTtkGz0GJr4d&currency=USD">  
 </script>
+=======
+<script src="https://www.paypal.com/sdk/js?client-id=AWts89Frxqd0WfbIAzRa2fjiW9FBuDFTEFW-Yp73B8xwyhElcBTslP9xjVnt8zE-bNJuGhxTnHjBGrAs&currency=USD"></script>
+>>>>>>> 0a396d97bfc21c4ad5acbf0b13e24a162cfd8568
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-      // Payment functionality
-      const paymentMethodSelect = document.querySelector("select[name='payment_method']");
-      const standardpaymentForm = document.getElementById("standard-payment-form");
-      const paypalButtonContainer = document.getElementById("paypal-button-container");
+document.addEventListener('DOMContentLoaded', function() {
+  // Payment method toggle
+  const paymentMethodSelect = document.querySelector("select[name='payment_method']");
+  const standardPaymentForm = document.getElementById("standard-payment-form");
+  const paypalButtonContainer = document.getElementById("paypal-button-container");
 
-      // Payment method toggle 
-      paymentMethodSelect.addEventListener('change', function(){
-          if (this.value === 'paypal'){
-            standardpaymentForm.style.display = 'none';
-            paypalButtonContainer.style.display = 'block'
-          } else {
-            standardpaymentForm.style.display = 'block';
-            paypalButtonContainer.style.display = 'none'
+  function togglePaymentMethod() {
+    if (paymentMethodSelect.value === 'paypal') {
+      standardPaymentForm.style.display = 'none';
+      paypalButtonContainer.style.display = 'block';
+    } else {
+      standardPaymentForm.style.display = 'block';
+      paypalButtonContainer.style.display = 'none';
+    }
+  }
 
-          }
-      });
+  paymentMethodSelect.addEventListener('change', togglePaymentMethod);
 
-      // Helper function for CSRF token via cookie validation
-      function getCookie(name){
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== '' ){
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++){
-          const cookie = cookies[i].trim();
-          if (cookie.substring(0, name.length + 1) === (name + '=')){
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            break;
-          }
+  // CSRF token retrieval
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
         }
       }
-      return cookieValue;
     }
+    return cookieValue;
+  }
 
-    // Fetch CSRF token from cookie, ensuring the paypal script is loaded before initialisation. 
-    if (window.paypal){
-      initPayButtons();
-    } else {
-      console.error('PayPal SDK not loaded')
-    }
-    
-
-  function initPayButtons(){
+  // PayPal Button Initialization
+  function initPayPalButtons() {
     paypal.Buttons({
-      // Create order on the server
-
-      createOrder: function(data, actions){
-        return fetch('http://127.0.0.1:8000/paypal/create-order/', {
+      createOrder: function(data, actions) {
+        return fetch('/paypal/create-order/', {
           method: 'POST',
           headers: {
-            "Content-Type": "application/json", // application
+            "Content-Type": "application/json",
             "X-CSRFToken": getCookie("csrftoken")
           }
         })
         .then(response => {
-          if (!response.ok){
+          if (!response.ok) {
             throw new Error('Network response failed');
           }
           return response.json();
         })
         .then(order => order.id)
         .catch(error => {
-          console.error("Error creating the Paypal order:", error);
-          alert("Failed to create the paypal order, please try again.");
+          console.error("PayPal Order Creation Error:", error);
+          alert("Failed to create PayPal order. Please try again.");
           throw error;
         });
       },
       
-      // Finalise the transation on the server
-
-      onApprove: function(data, actions){
-        return fetch('http://127.0.0.1:8000/paypal/capture-payment/', {
+      onApprove: function(data, actions) {
+        return fetch('/paypal/capture-payment/', {
           method: 'POST',
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": getCookie("csrftoken")
           },
-
           body: JSON.stringify({
             orderID: data.orderID
           })
-
         })
         .then(response => {
-        if (!response.ok){
-            throw new Error('Payment capture failed.')
-        }
-        return response.json();
+          if (!response.ok) {
+            throw new Error('Payment capture failed');
+          }
+          return response.json();
         })
-
-        .then(function(data){
-          if (data.status == 'success'){
-            window.location.href = `http://127.0.0.1:8000/order/confirmation/${data.order_id}/`;
+        .then(function(data) {
+          if (data.status === 'success') {
+            window.location.href = `/order/confirmation/${data.order_id}/`;
           } else {
+<<<<<<< HEAD
               throw new Error("payment failed, please try again.");
+=======
+            throw new Error("Payment failed. Please try again.");
+>>>>>>> 0a396d97bfc21c4ad5acbf0b13e24a162cfd8568
           }
         })
-
         .catch(error => {
-          console.error("Payment Error", error);
-          alert("Payment processing failed, please contact support.");
-
+          console.error("Payment Processing Error:", error);
+          alert("Payment processing failed. Please contact support.");
         });
       },
       
-      // Handle cancellation 
-      
-      onCancel: function(data){
-        console.log('Paypal payment cancelled.', data);
-        alert('Payment processing cancelled.');
-
+      onCancel: function(data) {
+        console.log('PayPal payment cancelled', data);
+        alert('Payment was cancelled.');
       },
 
-      // Handle errors
-
-      onError: function(err){
-        console.error('Paypal Button Error:', err); 
-        alert('An error occurred with Paypal, please try again later.');
+      onError: function(err) {
+        console.error('PayPal Button Error:', err);
+        alert('An error occurred with PayPal. Please try again later.');
       }
-    
     }).render('#paypal-button-container');
   }
 
-  });
+  // Initialize PayPal buttons if SDK is loaded
+  if (window.paypal) {
+    initPayPalButtons();
+  } else {
+    console.error('PayPal SDK not loaded');
+  }
+});
 </script>
-
 {% endblock extra_js %}
