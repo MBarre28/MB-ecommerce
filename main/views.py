@@ -549,9 +549,7 @@ def capture_paypal_payment(request):
                 payment_status="completed",
                 transaction_id=transaction_id,
             )
-
-<<<<<<< HEAD
-        )
+            
         # clearing the cart items 
         cart_items.delete()
 
@@ -581,23 +579,3 @@ def capture_paypal_payment(request):
 
     
 
-=======
-            # Clear cart items
-            cart_items.delete()
-
-            return JsonResponse({
-                "status": "success",
-                "order_id": order.id
-            })
-
-    except Exception as e:
-        # More detailed error logging
-        import traceback
-        print(f"Unexpected error in capture_paypal_payment: {e}")
-        print("Full traceback:", traceback.format_exc())
-        
-        return JsonResponse({
-            "status": "error",
-            "message": str(e)
-        }, status=500)
->>>>>>> 0a396d97bfc21c4ad5acbf0b13e24a162cfd8568

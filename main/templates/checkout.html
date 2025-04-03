@@ -110,12 +110,8 @@
 {% endblock content %}
 
 {% block extra_js %}
-<<<<<<< HEAD
 <script src="https://www.paypal.com/sdk/js?client-id=ASqKXHWmxqA9P4V1Y3fwLKbk2OHbEmHriCa4XjVC3pXmez6WNSyD74Bq4nkY9pjG1fudUTtkGz0GJr4d&currency=USD">  
 </script>
-=======
-<script src="https://www.paypal.com/sdk/js?client-id=AWts89Frxqd0WfbIAzRa2fjiW9FBuDFTEFW-Yp73B8xwyhElcBTslP9xjVnt8zE-bNJuGhxTnHjBGrAs&currency=USD"></script>
->>>>>>> 0a396d97bfc21c4ad5acbf0b13e24a162cfd8568
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -198,11 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
           if (data.status === 'success') {
             window.location.href = `/order/confirmation/${data.order_id}/`;
           } else {
-<<<<<<< HEAD
               throw new Error("payment failed, please try again.");
-=======
-            throw new Error("Payment failed. Please try again.");
->>>>>>> 0a396d97bfc21c4ad5acbf0b13e24a162cfd8568
           }
         })
         .catch(error => {
