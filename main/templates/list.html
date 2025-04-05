@@ -48,9 +48,9 @@
       <div class="m-4">
         <h5 class="card-title">{{ product.name }}</h5>
         <p class="card-text">£{{ product.price }}</p>
-        <p class="card-text">Stock: {{product.stock}}</p>
+        <p class="card-text">Stock: {{ product.stock }}</p>
         <p class="mb-2 m-2">
-          <span class="font-semibold"> available: </span>
+          <span class="font-semibold">Available: </span>
 
           {% if product.available %}
           <span class="text-green-600"> In stock </span>
