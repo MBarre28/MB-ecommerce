@@ -3,17 +3,6 @@
 {% block content %}
 <div class="container py-5">
     <h1 class="fs-2 bold-mb-4"> Shopping Cart </h1>
-    {% comment %} {% if messages %}
-    <div class="messages mb-4">
-        <!-- For loop to itrate the messages with the conditional statement -->
-        {% for message in messages %}
-        <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-success {% endif %} rounded ">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %} {% endcomment %}
-
     {% if cart_items %}
     <div class="card shadow">
         <div class="table-responsive">
