@@ -47,7 +47,7 @@ body{
 }
 
 .main-style{
-    margin: 5%;
+    margin: 10%;
 
 }
 
@@ -57,5 +57,4 @@ footer{
     padding: 16px;
     background-color: black;
     color: #ffff;
-    padding: 10px;
 }
