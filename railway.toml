@@ -1,12 +1,16 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+buildCommand = "python manage.py collectstatic --noinput"
 
 [deploy]
-numReplicas = 1
-startCommand = "gunicorn projectecommerce.wsgi:application --bind 0.0.0.0:8000"
+startCommand = "gunicorn projectecommerce.wsgi:application --bind 0.0.0.0:8000 --timeout 120 --workers 2"
+# No healthcheck configuration here
 restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 3
 
-[env]
-PORT = 8000
+[phases.setup]
+nixPkgs = ["postgresql", "python311"]
+
+[[services]]
+autoDeploy = true
+internal_port = 8000
+port = 443
