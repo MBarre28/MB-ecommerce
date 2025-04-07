@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "main",
     "users",
     "storages",
+    "whitenoise.runserver_nostatic",
 ]
 
 MIDDLEWARE = [
