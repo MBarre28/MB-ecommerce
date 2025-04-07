@@ -25,4 +25,4 @@ COPY . .
 RUN python manage.py collectstatic --noinput
 
 # Run gunicorn
-CMD gunicorn projectecommerce.wsgi:application --bind 0.0.0.0:8000
+CMD gunicorn projectecommerce.wsgi

@@ -1,1 +1,1 @@
-web: gunicorn projectecommerce.wsgi:application
+web: gunicorn projectecommerce.wsgi
