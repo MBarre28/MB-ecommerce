@@ -43,10 +43,12 @@ INSTALLED_APPS = [
     "users",
     "storages",
     "whitenoise.runserver_nostatic",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -94,6 +96,10 @@ DATABASES = {
     "default": dj_database_url.config(default = DATABASE_PUBLIC_URL, conn_max_age = 600)
    
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://mb-ecommerce-production.up.railway.app",
+]
 
 
 # Password validation
