@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-#!so9147lu!!&9t^dlomr26%m&2)(ybs)_3%ae5g@06gzhnz&@"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["mb-ecommerce-production.up.railway.app"]
 
@@ -141,7 +141,7 @@ STATIC_URL = "static/"
 STATICFILES_DIR = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-MEDIA_URL = "/media/"
+MEDIA_URL = "/app/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
