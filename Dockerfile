@@ -1,5 +1,4 @@
 FROM python:3.11-slim
-
 WORKDIR /app
 
 # Set environment variables
@@ -12,6 +11,10 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc libpq-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Create media directory with proper permissions
+RUN mkdir -p /app/media && \
+    chmod 755 /app/media
 
 # Install Python dependencies
 COPY requirements.txt .
