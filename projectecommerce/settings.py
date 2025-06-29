@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 import dj_database_url
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()  # Adds secrets from the .env file to environment variables
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,8 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-#!so9147lu!!&9t^dlomr26%m&2)(ybs)_3%ae5g@06gzhnz&@"
-
+SECRET_KEY = os.getenv(
+    "SECRET_KEY"
+)  # Call .env variable using os function getenv() after load_doatenv()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -90,11 +93,10 @@ WSGI_APPLICATION = "projectecommerce.wsgi.application"
 # }
 
 
-DATABASE_PUBLIC_URL= "postgresql://postgres:ojyLVreTCRYXyealYlPetnJqAVWaNYQv@ballast.proxy.rlwy.net:19351/railway"
+DATABASE_PUBLIC_URL = "postgresql://postgres:ojyLVreTCRYXyealYlPetnJqAVWaNYQv@ballast.proxy.rlwy.net:19351/railway"
 
 DATABASES = {
-    "default": dj_database_url.config(default = DATABASE_PUBLIC_URL, conn_max_age = 600)
-   
+    "default": dj_database_url.config(default=DATABASE_PUBLIC_URL, conn_max_age=600)
 }
 
 CSRF_TRUSTED_ORIGINS = [
@@ -158,6 +160,10 @@ LOGOUT_REDIRECT_URL = "product_list"
 
 # paypal payment settings
 
-PAYPAL_CLIENT_ID = "ASqKXHWmxqA9P4V1Y3fwLKbk2OHbEmHriCa4XjVC3pXmez6WNSyD74Bq4nkY9pjG1fudUTtkGz0GJr4d"
-PAYPAL_CLIENT_SECRET = "EIv6of5IaKOkvKy5Qct8_Lb030zwNV5daXyRxNTMSDvha7pSFPQn_WBa_dowaw9-YLvmR-CW0Wt_ybh2"
+PAYPAL_CLIENT_ID = (
+    "ASqKXHWmxqA9P4V1Y3fwLKbk2OHbEmHriCa4XjVC3pXmez6WNSyD74Bq4nkY9pjG1fudUTtkGz0GJr4d"
+)
+PAYPAL_CLIENT_SECRET = (
+    "EIv6of5IaKOkvKy5Qct8_Lb030zwNV5daXyRxNTMSDvha7pSFPQn_WBa_dowaw9-YLvmR-CW0Wt_ybh2"
+)
 PAYPAL_MODE = "sandbox"
