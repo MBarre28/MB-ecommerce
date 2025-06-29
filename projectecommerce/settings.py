@@ -21,9 +21,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-#!so9147lu!!&9t^dlomr26%m&2)(ybs)_3%ae5g@06gzhnz&@"
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -155,9 +152,3 @@ LOGIN_URL = "login"
 
 LOGIN_REDIRECT_URL = "product_list"
 LOGOUT_REDIRECT_URL = "product_list"
-
-# paypal payment settings
-
-PAYPAL_CLIENT_ID = "ASqKXHWmxqA9P4V1Y3fwLKbk2OHbEmHriCa4XjVC3pXmez6WNSyD74Bq4nkY9pjG1fudUTtkGz0GJr4d"
-PAYPAL_CLIENT_SECRET = "EIv6of5IaKOkvKy5Qct8_Lb030zwNV5daXyRxNTMSDvha7pSFPQn_WBa_dowaw9-YLvmR-CW0Wt_ybh2"
-PAYPAL_MODE = "sandbox"
