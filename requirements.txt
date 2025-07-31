@@ -7,6 +7,7 @@ colorama==0.4.6
 dj-database-url==2.3.0
 Django==5.1.1
 django-cors-headers==4.7.0
+django-redis==6.0.0
 django-storages==1.14.6
 gunicorn==23.0.0
 idna==3.10
@@ -18,6 +19,8 @@ platformdirs==4.3.6
 psycopg2==2.9.10
 psycopg2-binary==2.9.10
 python-dotenv==1.1.1
+python-memcached==1.62
+redis==6.2.0
 requests==2.32.3
 sqlparse==0.5.1
 typing_extensions==4.13.1
