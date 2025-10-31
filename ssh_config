@@ -1,0 +1,4 @@
+Host *
+  StrictHostKeyChecking no
+  IdentityFile /root/.ssh/private_key
+  UserKnownHostsFile /dev/null

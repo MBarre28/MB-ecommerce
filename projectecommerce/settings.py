@@ -13,10 +13,32 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 import dj_database_url
 from pathlib import Path
+from dotenv import load_dotenv 
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Build paths for Redis URL and memcached URL dependencies 
+REDIS_URL = os.getenv("REDIS_URL")
+MEMCACHED_URL = os.getenv("MEMCACHED_URL")
 
+
+CACHES = {
+    # Using Redis by default
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "REDIS_URL",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+
+    "memcached": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCatche",
+        "LOCATION": "MEMCACHED_URL",
+    }
+}
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -24,7 +46,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["mb-ecommerce-production.up.railway.app"]
+ALLOWED_HOSTS = ["mb-ecommerce-production.up.railway.app", "127.0.0.1"]
 
 
 # Application definition
@@ -42,6 +64,7 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     "corsheaders",
 ]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -87,7 +110,7 @@ WSGI_APPLICATION = "projectecommerce.wsgi.application"
 # }
 
 
-DATABASE_PUBLIC_URL= "postgresql://postgres:ojyLVreTCRYXyealYlPetnJqAVWaNYQv@ballast.proxy.rlwy.net:19351/railway"
+DATABASE_PUBLIC_URL = os.getenv("DATABASE_PUBLIC_URL")
 
 DATABASES = {
     "default": dj_database_url.config(default = DATABASE_PUBLIC_URL, conn_max_age = 600)
@@ -96,6 +119,7 @@ DATABASES = {
 
 CSRF_TRUSTED_ORIGINS = [
     "https://mb-ecommerce-production.up.railway.app",
+    "http://127.0.0.1:8000",
 ]
 
 
@@ -152,3 +176,6 @@ LOGIN_URL = "login"
 
 LOGIN_REDIRECT_URL = "product_list"
 LOGOUT_REDIRECT_URL = "product_list"
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("SECRET_KEY")
