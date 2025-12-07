@@ -9,7 +9,7 @@ click==8.1.7
 colorama==0.4.6
 cryptography==46.0.1
 dj-database-url==2.3.0
-Django==5.2.4
+Django==5.2.9
 django-cors-headers==4.7.0
 django-storages==1.14.6
 googleapis-common-protos==1.70.0
