@@ -1,0 +1,12 @@
+---
+- name: 'Muhammads playbook for updating VMs and packages'
+  hosts: 'all'
+  tasks:
+    - name: 'update-apt-cache'
+      become: 'yes'
+      apt: 
+        update_cache: 'yes'
+    - name: 'update-packages'
+      become: 'yes'
+      apt:
+        upgrade: 'yes'

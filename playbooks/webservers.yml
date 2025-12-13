@@ -1,0 +1,74 @@
+# permission files
+
+- name: 'Muhammads Playbook for deploying webservers.'
+  hosts: 'webservers'
+  vars:
+    working_directory: /etc/ecommerce
+    venv: /opt/ecommerce/venv/bin/opentelemtry-instrument
+    pythondontwritebytecode: 1
+    pythonunbuffered: 1
+    debug: 1
+    description: MB ecommerce site
+    exec_start: gunicorn projectecommerce.wsgi:application --bind 0.0.0.0:8000
+  tasks:
+    - name: 'Install system dependencies'
+      become: true
+      apt: 
+        update_cache: true
+        name: 
+          - gcc
+          - libpq-dev
+          - pip
+          - virtualenv
+          - gunicorn
+        clean: true
+    - name: 'repostory file using state'
+      file: 
+        state: 'absent'
+        path: '/var/lib/apt/lists/*'
+    - name: 'cloning github repository'
+      become: true
+      git:
+        accept_hostkey: true
+        force: true
+        repo: 'git@github.com:MBarre28/MB-ecommerce.git'
+        dest: '{{working_directory}}'
+        key_file: '/home/worker-node/.ssh/id_ed25519'
+    - name: 'Create media directory with proper permissions'
+      become: true
+      file:
+        path: '{{working_directory}}/media'
+        state: 'directory'
+        mode: '755'
+    - name: 'Install Python dependencies'
+      become: true
+      ansible.builtin.pip:
+        requirements: '{{working_directory}}/requirements.txt'
+        virtualenv: '/opt/ecommerce/venv'
+        virtualenv_python: 'python3'
+    - name: 'Collect static files'
+      become: true
+      ansible.builtin.shell: |
+        source /opt/ecommerce/venv/bin/activate 
+        cd '{{working_directory}}/'
+        python manage.py collectstatic --noinput
+      args:
+        executable: /bin/bash   
+    - name: 'gunicorn setup file'
+      become: true
+      ansible.builtin.template: 
+        src: service.j2
+        dest: /etc/systemd/system/ecommerce.service
+        owner: root
+        group: root
+        mode: '0644'
+    - name: 'Reloading systemd & restarting servers'
+      become: true
+      ansible.builtin.systemd: 
+        daemon_reload: yes
+        name: ecommerce.service
+        state: restarted
+
+        
+
+        

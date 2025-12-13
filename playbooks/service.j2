@@ -1,0 +1,12 @@
+[Unit]
+Description={{description}}
+After=network.target
+
+[Service]
+EnvironmentFile={{working_directory}}/.env
+WorkingDirectory={{working_directory}}
+Restart=on-failure
+ExecStart={{venv}} {{exec_start}}
+
+[Install]
+WantedBy=multi-user.target
