@@ -21,7 +21,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Build paths for Redis URL and memcached URL dependencies 
 REDIS_URL = os.getenv("REDIS_URL")
-MEMCACHED_URL = os.getenv("MEMCACHED_URL")
+# MEMCACHED_URL = os.getenv("MEMCACHED_URL")
 
 
 CACHES = {
@@ -34,10 +34,10 @@ CACHES = {
         }
     },
 
-    "memcached": {
-        "BACKEND": "django.core.cache.backends.memcached.PyMemcachedCache",
-        "LOCATION": "MEMCACHED_URL",
-    }
+    # "memcached": {
+    #     "BACKEND": "django.core.cache.backends.memcached.PyMemcachedCache",
+    #     "LOCATION": "MEMCACHED_URL",
+    # }
 }
 
 # Quick-start development settings - unsuitable for production
