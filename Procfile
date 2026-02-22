@@ -1,1 +1,0 @@
-web: gunicorn projectecommerce.wsgi

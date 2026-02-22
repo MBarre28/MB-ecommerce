@@ -1,0 +1,30 @@
+- name: 'database dependancies'
+  become: true
+  ansible.builtin.apt:
+    pkg:
+    - 'postgresql'
+    - 'postgresql-contrib'
+    - 'python3-psycopg2'
+    - 'acl'
+- name: 'ensuring postgres starts'
+  become: true
+  ansible.builtin.service: 
+    name: 'postgresql'
+    state: 'started'
+    enabled: yes
+
+- name: 'setting the postgresql user'
+  become: true
+  become_user: 'postgres'
+  community.postgresql.postgresql_user:
+    name: '{{config_user}}'
+    password: '{{password}}'
+    role_attr_flags: 'CREATEDB,LOGIN'
+    login_unix_socket: '/var/run/postgresql'
+- name: 'setting the postgresql db'
+  become: true
+  become_user: 'postgres'
+  community.postgresql.postgresql_db:
+    name: '{{config_user}}'
+    comment: 'my db test with postgresql'
+    owner: '{{config_user}}'

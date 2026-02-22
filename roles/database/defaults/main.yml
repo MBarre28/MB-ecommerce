@@ -1,0 +1,3 @@
+config_user: 'db-node'
+password: 'database-node28'
+application: 'ecommerce'

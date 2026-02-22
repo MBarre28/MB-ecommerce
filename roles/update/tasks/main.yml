@@ -1,0 +1,9 @@
+- name: 'update-apt-cache'
+  become: true
+  apt: 
+    update_cache: 'yes'
+- name: 'update-packages'
+  become: true
+  apt:
+    upgrade: 'yes'
+

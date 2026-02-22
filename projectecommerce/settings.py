@@ -35,7 +35,7 @@ CACHES = {
     },
 
     "memcached": {
-        "BACKEND": "django.core.cache.backends.memcached.PythonMemcachedCache",
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcachedCache",
         "LOCATION": "MEMCACHED_URL",
     }
 }
