@@ -24,20 +24,20 @@
 - name: 'Create media directory with proper permissions'
   become: true
   file:
-    path: '{{working_directory}}/media'
+    path: '{{ working_directory }}/media'
     state: 'directory'
     mode: '755'
 - name: 'Install Python dependencies'
   become: true
   ansible.builtin.pip:
-    requirements: '{{working_directory}}/requirements.txt'
+    requirements: '{{ working_directory }}/requirements.txt'
     virtualenv: '/opt/ecommerce/venv'
     virtualenv_python: 'python3'
 - name: 'Collect static files'
   become: true
   ansible.builtin.shell: |
     source /opt/ecommerce/venv/bin/activate 
-    cd '{{working_directory}}/'
+    cd '{{ working_directory }}/'
     python manage.py collectstatic --noinput
   args:
     executable: /bin/bash   
@@ -59,7 +59,7 @@
   become: true
   ansible.builtin.template: 
     src: 'env.j2'
-    dest: '{{working_directory}}/.env'
+    dest: '{{ working_directory }}/.env'
     owner: 'root'
     group: 'root'
     mode: '0644'
@@ -67,7 +67,7 @@
   become: true
   ansible.builtin.shell: |
     source /opt/ecommerce/venv/bin/activate 
-    cd '{{working_directory}}/'
+    cd '{{ working_directory }}/'
     python manage.py migrate
   args:
     executable: /bin/bash
@@ -75,14 +75,14 @@
   become: true
   ansible.builtin.shell: |
     source /opt/ecommerce/venv/bin/activate 
-    cd '{{working_directory}}/'
+    cd '{{ working_directory }}/'
     python manage.py createsuperuser --noinput
   args:
     executable: /bin/bash
   environment: 
-    DJANGO_SUPERUSER_USERNAME: '{{superuser_username}}'
-    DJANGO_SUPERUSER_EMAIL: '{{superuser_email}}'
-    DJANGO_SUPERUSER_PASSWORD: '{{superuser_password}}'
+    DJANGO_SUPERUSER_USERNAME: '{{ superuser_username }}'
+    DJANGO_SUPERUSER_EMAIL: '{{ superuser_email }}'
+    DJANGO_SUPERUSER_PASSWORD: '{{ superuser_password }}'
   register: 'result'
   changed_when: "'already taken' not in result.stderr.lower()"
   failed_when: false
