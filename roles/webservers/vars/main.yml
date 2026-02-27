@@ -1,4 +1,15 @@
 ---
 # vars file for roles/webservers
-
-
+webservers_working_directory: /etc/ecommerce
+webservers_venv: /opt/ecommerce/venv/bin/gunicorn
+webservers_pythondontwritebytecode: 1
+webservers_pythonunbuffered: 1
+webservers_debug: 1
+webservers_description: MB ecommerce site
+webservers_exec_start: projectecommerce.wsgi:application --bind 0.0.0.0:8000
+webservers_db_user: 'db-node'
+webservers_db_password: 'database-node28'
+webservers_db: 'db-node'
+webservers_superuser_username: 'mb-ecome21'
+webservers_superuser_email: 'mbcom12@gmail.comea'
+webservers_superuser_password: 'ecompasstest!2828*12'

@@ -1,12 +1,12 @@
 [Unit]
-Description={{ description }}
+Description={{ webservers_description }}
 After=network.target
 
 [Service]
-EnvironmentFile={{ working_directory }}/.env
-WorkingDirectory={{ working_directory }}
+EnvironmentFile={{ webservers_working_directory }}/.env
+WorkingDirectory={{ webservers_working_directory }}
 Restart=on-failure
-ExecStart={{ venv }} {{ exec_start }}
+ExecStart={{ webservers_venv }} {{ webservers_exec_start }}
 
 [Install]
 WantedBy=multi-user.target
