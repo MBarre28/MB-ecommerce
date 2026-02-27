@@ -9,7 +9,7 @@
       - virtualenv
       - gunicorn
     clean: true
-- name: 'repostory file using state'
+- name: 'Repostory file using state'
   file: 
     state: 'absent'
     path: '/var/lib/apt/lists/*'
@@ -41,7 +41,7 @@
     python manage.py collectstatic --noinput
   args:
     executable: /bin/bash   
-- name: 'gunicorn setup file'
+- name: 'Gunicorn setup file'
   become: true
   ansible.builtin.template: 
     src: service.j2
@@ -52,10 +52,10 @@
 - name: 'Reloading systemd & restarting servers'
   become: true
   ansible.builtin.systemd: 
-    daemon_reload: yes
+    daemon_reload: true
     name: ecommerce.service
     state: restarted
-- name: 'setting up the environment vars'
+- name: 'Setting up the environment vars'
   become: true
   ansible.builtin.template: 
     src: 'env.j2'
@@ -71,7 +71,7 @@
     python manage.py migrate
   args:
     executable: /bin/bash
-- name: 'creating a superuser'
+- name: 'Creating a superuser'
   become: true
   ansible.builtin.shell: |
     source /opt/ecommerce/venv/bin/activate 
