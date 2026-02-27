@@ -1,13 +1,13 @@
-working_directory: /etc/ecommerce
-venv: /opt/ecommerce/venv/bin/gunicorn
-pythondontwritebytecode: 1
-pythonunbuffered: 1
-debug: 1
-description: MB ecommerce site
-exec_start: projectecommerce.wsgi:application --bind 0.0.0.0:8000
-db_user: 'db-node'
-db_password: 'database-node28'
-db: 'db-node'
-superuser_username: 'mb-ecome21'
-superuser_email: 'mbcom12@gmail.comea'
-superuser_password: 'ecompasstest!2828*12'
+webservers_working_directory: /etc/ecommerce
+webservers_venv: /opt/ecommerce/venv/bin/gunicorn
+webservers_pythondontwritebytecode: 1
+webservers_pythonunbuffered: 1
+webservers_debug: 1
+webservers_description: MB ecommerce site
+webservers_exec_start: projectecommerce.wsgi:application --bind 0.0.0.0:8000
+webservers_db_user: 'db-node'
+webservers_db_password: 'database-node28'
+webservers_db: 'db-node'
+webservers_superuser_username: 'mb-ecome21'
+webservers_superuser_email: 'mbcom12@gmail.comea'
+webservers_superuser_password: 'ecompasstest!2828*12'
